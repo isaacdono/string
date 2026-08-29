@@ -145,8 +145,9 @@ async def _generate_ai_analysis(handle: str, description: Optional[str] = None) 
     )
 
     models_to_try = [
-        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "openrouter/free",
         "google/gemma-2-9b-it:free",
+        "meta-llama/llama-3-8b-instruct:free",
     ]
 
     for model_name in models_to_try:
