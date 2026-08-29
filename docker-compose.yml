@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-bytemedia}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bytemedia-network
 
   backend-platform:
     build:
@@ -24,6 +26,8 @@ services:
     depends_on:
       - db
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - bytemedia-network
 
   backend-ai:
     build:
@@ -39,6 +43,8 @@ services:
     depends_on:
       - db
     command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    networks:
+      - bytemedia-network
 
   backend-checkout:
     build:
@@ -55,6 +61,8 @@ services:
     depends_on:
       - db
     command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    networks:
+      - bytemedia-network
 
   frontend-platform:
     build:
@@ -72,6 +80,8 @@ services:
     depends_on:
       - backend-platform
     command: npm run dev
+    networks:
+      - bytemedia-network
 
   frontend-checkout:
     build:
@@ -88,8 +98,14 @@ services:
     depends_on:
       - backend-checkout
     command: npm run dev
+    networks:
+      - bytemedia-network
 
 volumes:
   postgres_data:
   frontend_platform_node_modules:
   frontend_checkout_node_modules:
+
+networks:
+  bytemedia-network:
+    driver: bridge

@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, Numeric, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
-from database import Base
+from .database import Base
 
 
 class Campaign(Base):

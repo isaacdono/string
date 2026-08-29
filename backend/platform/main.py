@@ -1,24 +1,27 @@
 import logging
-import os
-import uuid
 from contextlib import asynccontextmanager
 from typing import Optional
 
-import httpx
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from database import get_db, init_db
-from models import Campaign
+# Infrastructure
+from infrastructure.database import get_db, init_db
+
+# Adapters & UseCases
+from adapters.repositories import SQLAlchemyCampaignRepository
+from adapters.gateways import HttpAIServiceGateway
+from usecases.create_campaign import CreateCampaignUseCase
+from usecases.get_campaign import GetCampaignUseCase
 
 logger = logging.getLogger("platform.main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize database tables on application startup
+    # Initialize database tables on application startup via infrastructure
     init_db()
     yield
 
@@ -39,6 +42,7 @@ app.add_middleware(
 )
 
 
+# DTO Schemas
 class CampaignCreateRequest(BaseModel):
     handle: str = Field(..., description="Creator handle, e.g., @criador", examples=["@exemplo"])
     description: Optional[str] = Field(
@@ -68,31 +72,29 @@ class CampaignDetailResponse(BaseModel):
     created_at: Optional[str] = None
 
 
-async def trigger_ai_analysis(
-    ai_url: str,
-    campaign_id: str,
-    handle: str,
-    description: Optional[str] = None,
-):
-    """Background task to trigger AI offer analysis in backend-ai."""
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{ai_url.rstrip('/')}/api/ai/analyze",
-                json={
-                    "campaign_id": campaign_id,
-                    "handle": handle,
-                    "description": description,
-                },
-            )
-            if response.status_code != 200:
-                logger.warning(
-                    f"AI service returned non-200 status {response.status_code}: {response.text}"
-                )
-    except Exception as e:
-        logger.warning(f"Could not notify AI service at {ai_url}: {e}")
+# Dependency Injection Helpers
+def get_campaign_repository(db: Session = Depends(get_db)) -> SQLAlchemyCampaignRepository:
+    return SQLAlchemyCampaignRepository(db)
 
 
+def get_ai_gateway() -> HttpAIServiceGateway:
+    return HttpAIServiceGateway()
+
+
+def get_create_campaign_use_case(
+    repo: SQLAlchemyCampaignRepository = Depends(get_campaign_repository),
+    gateway: HttpAIServiceGateway = Depends(get_ai_gateway),
+) -> CreateCampaignUseCase:
+    return CreateCampaignUseCase(repo, gateway)
+
+
+def get_get_campaign_use_case(
+    repo: SQLAlchemyCampaignRepository = Depends(get_campaign_repository),
+) -> GetCampaignUseCase:
+    return GetCampaignUseCase(repo)
+
+
+# Routes
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {"status": "ok", "service": "platform"}
@@ -108,43 +110,24 @@ async def health_check():
 async def create_campaign(
     payload: CampaignCreateRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
+    use_case: CreateCampaignUseCase = Depends(get_create_campaign_use_case),
 ):
     """
     Saves a pending campaign with optional product description to PostgreSQL
-    and triggers the AI generation pipeline.
+    and triggers the AI generation pipeline via clean architecture use case.
     """
-    cleaned_handle = payload.handle.strip()
-    if not cleaned_handle:
+    try:
+        campaign_id = await use_case.execute(
+            payload.handle,
+            payload.description,
+            background_tasks,
+        )
+        return CampaignCreateResponse(campaign_id=campaign_id)
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Creator handle cannot be empty.",
+            detail=str(e),
         )
-
-    cleaned_desc = payload.description.strip() if payload.description else None
-
-    campaign = Campaign(
-        id=uuid.uuid4(),
-        handle=cleaned_handle,
-        description=cleaned_desc,
-        status="pending",
-        theme_config={},
-        copy_data={},
-    )
-    db.add(campaign)
-    db.commit()
-    db.refresh(campaign)
-
-    backend_ai_url = os.getenv("BACKEND_AI_URL", "http://backend-ai:8001")
-    background_tasks.add_task(
-        trigger_ai_analysis,
-        backend_ai_url,
-        str(campaign.id),
-        cleaned_handle,
-        cleaned_desc,
-    )
-
-    return CampaignCreateResponse(campaign_id=str(campaign.id))
 
 
 @app.get(
@@ -156,38 +139,30 @@ async def create_campaign(
 )
 async def get_campaign(
     campaign_id: str,
-    db: Session = Depends(get_db),
+    use_case: GetCampaignUseCase = Depends(get_get_campaign_use_case),
 ):
     """
     Retrieves campaign progress and generated blueprint metadata for creators.
     """
     try:
-        camp_uuid = uuid.UUID(campaign_id) if isinstance(campaign_id, str) else campaign_id
-    except (ValueError, TypeError):
+        campaign = use_case.execute(campaign_id)
+        return CampaignDetailResponse(
+            id=str(campaign.id),
+            handle=campaign.handle,
+            description=campaign.description,
+            status=campaign.status or "pending",
+            product_type=campaign.product_type,
+            price=float(campaign.price) if campaign.price is not None else None,
+            theme_config=campaign.theme_config or {},
+            copy_data=campaign.copy_data or {},
+            scarcity_limit=campaign.scarcity_limit,
+            blueprint_content=campaign.blueprint_content,
+            pdf_url=campaign.pdf_url,
+            expires_at=campaign.expires_at.isoformat() if campaign.expires_at else None,
+            created_at=campaign.created_at.isoformat() if campaign.created_at else None,
+        )
+    except KeyError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Campaign not found",
         )
-
-    campaign = db.query(Campaign).filter(Campaign.id == camp_uuid).first()
-    if not campaign:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Campaign not found",
-        )
-
-    return CampaignDetailResponse(
-        id=str(campaign.id),
-        handle=campaign.handle,
-        description=campaign.description,
-        status=campaign.status or "pending",
-        product_type=campaign.product_type,
-        price=float(campaign.price) if campaign.price is not None else None,
-        theme_config=campaign.theme_config or {},
-        copy_data=campaign.copy_data or {},
-        scarcity_limit=campaign.scarcity_limit,
-        blueprint_content=campaign.blueprint_content,
-        pdf_url=campaign.pdf_url,
-        expires_at=campaign.expires_at.isoformat() if campaign.expires_at else None,
-        created_at=campaign.created_at.isoformat() if campaign.created_at else None,
-    )

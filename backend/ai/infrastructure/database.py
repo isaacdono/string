@@ -40,7 +40,7 @@ def get_db():
 def init_db():
     """Initializes PostgreSQL tables if they do not already exist."""
     try:
-        import models  # noqa: F401
+        from . import models  # noqa: F401
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables initialized successfully.")
     except Exception as e:

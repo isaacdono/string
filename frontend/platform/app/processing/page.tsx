@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, Suspense } from "react";
+import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle2,
@@ -88,6 +88,7 @@ function ProcessingContent() {
     "Iniciando pipeline do ByteMedia Drop Engine...",
   ]);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const redirectedRef = useRef<boolean>(false);
 
   // Progressive timer + status polling
   useEffect(() => {
@@ -160,17 +161,16 @@ function ProcessingContent() {
 
   // Handle completion redirect
   useEffect(() => {
-    if (progress >= 99 && !isCompleted) {
-      setIsCompleted(true);
+    if ((progress >= 99 || isCompleted) && !redirectedRef.current) {
+      redirectedRef.current = true;
       setProgress(100);
       setCurrentStepIndex(3);
-      setLogs((prev) => [...prev, "Drop gerado com sucesso! Redirecionando..."]);
+      setLogs((prev) => {
+        if (prev.includes("Drop gerado com sucesso! Redirecionando...")) return prev;
+        return [...prev, "Drop gerado com sucesso! Redirecionando..."];
+      });
 
-      const redirectTimer = setTimeout(() => {
-        router.push(`/success/${encodeURIComponent(campaignId)}`);
-      }, 1000);
-
-      return () => clearTimeout(redirectTimer);
+      router.push(`/success/${encodeURIComponent(campaignId)}`);
     }
   }, [progress, isCompleted, campaignId, router]);
 
