@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: bytemedia
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend-platform:
+    build:
+      context: ./backend/platform
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/platform:/app
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/bytemedia
+      - BACKEND_AI_URL=http://backend-ai:8001
+    depends_on:
+      - db
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  backend-ai:
+    build:
+      context: ./backend/ai
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend/ai:/app
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/bytemedia
+      - OPENROUTER_API_KEY=chave_do_nemotron
+    depends_on:
+      - db
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+  backend-checkout:
+    build:
+      context: ./backend/checkout
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./backend/checkout:/app
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/bytemedia
+      - ASAAS_API_KEY=sua_chave_asaas
+      - ASAAS_WALLET_ID=id_da_sua_carteira_para_split
+    depends_on:
+      - db
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+
+  frontend-platform:
+    build:
+      context: ./frontend/platform
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/platform:/app
+      - frontend_platform_node_modules:/app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend-platform
+    command: npm run dev
+
+  frontend-checkout:
+    build:
+      context: ./frontend/checkout
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./frontend/checkout:/app
+      - frontend_checkout_node_modules:/app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8002
+    depends_on:
+      - backend-checkout
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  frontend_platform_node_modules:
+  frontend_checkout_node_modules:
