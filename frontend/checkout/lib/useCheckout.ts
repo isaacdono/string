@@ -61,8 +61,8 @@ export function useCheckout(campaignId: string) {
             product_type: "digital",
             price: 97.0,
             theme_config: {
-              primary: "#22c55e",
-              background: "#09090b",
+              primary: "#FF4D00",
+              background: "#F5F4EF",
               foto_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
             },
             copy_data: {
@@ -145,9 +145,10 @@ export function useCheckout(campaignId: string) {
   }, [checkoutStep, orderId]);
 
   // Theme colors
-  const primaryColor = campaign?.theme_config?.primary || "#22c55e";
-  const backgroundColor = campaign?.theme_config?.background || "#09090b";
+  const primaryColor = campaign?.theme_config?.primary || "#FF4D00";
+  const backgroundColor = campaign?.theme_config?.background || "#F5F4EF";
   const avatarUrl = campaign?.theme_config?.foto_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80";
+
 
   // Form Validation
   const validateForm = () => {

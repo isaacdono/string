@@ -9,13 +9,10 @@ import {
   Copy,
   Check,
   ExternalLink,
-  Zap,
-  Sparkles,
   Share2,
   FileText,
   Smartphone,
   ArrowRight,
-  ShieldCheck,
 } from "lucide-react";
 import { CHECKOUT_BASE_URL, getBlueprintPdfUrl } from "@/lib/api";
 
@@ -47,9 +44,7 @@ export default function SuccessPage() {
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
-
     try {
-      // Try direct navigation or fetch from backend-ai static directory
       const link = document.createElement("a");
       link.href = pdfDownloadUrl;
       link.target = "_blank";
@@ -58,8 +53,7 @@ export default function SuccessPage() {
       link.click();
       document.body.removeChild(link);
     } catch {
-      // Fallback blob
-      const sampleContent = `%PDF-1.4\n% ByteMedia Blueprint Executivo\n% Campanha: ${campaignId}\n% Gerado via NVIDIA Nemotron AI Engine\n1 0 obj\n<< /Title (ByteMedia Blueprint - ${campaignId}) >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF`;
+      const sampleContent = `%PDF-1.4\n% ByteMedia Blueprint Executivo\n% Campanha: ${campaignId}\n1 0 obj\n<< /Title (ByteMedia Blueprint) >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF`;
       const blob = new Blob([sampleContent], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -70,79 +64,101 @@ export default function SuccessPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } finally {
-      setTimeout(() => {
-        setIsDownloading(false);
-      }, 800);
+      setTimeout(() => setIsDownloading(false), 800);
     }
   };
 
   const storyTemplates = [
     {
-      title: "Story 1: Aquecimento (Curiosidade)",
+      title: "Story 1 — Aquecimento",
       text: "Galera, preparei algo exclusivo que vocês me pediram há meses. As vagas são super limitadas e abrem hoje às 20h! 🔥 Fiquem de olho!",
     },
     {
-      title: "Story 2: Lançamento com Adesivo de Link",
+      title: "Story 2 — Lançamento",
       text: `ESTÁ LIBERADO! 🚀 Acessem o link e garantam o seu antes que esgote o lote: ${salesLink}`,
     },
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white flex flex-col justify-between selection:bg-emerald-500 selection:text-zinc-950">
-      {/* Background glowing gradient */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/15 blur-[140px] rounded-full" />
-      </div>
-
+    <main
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "#F5F4EF", color: "#0E0E0E" }}
+    >
       {/* Header */}
-      <header className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
-            <Zap className="w-4 h-4 text-zinc-950 fill-zinc-950" />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-white">
-            Byte<span className="text-emerald-400">Media</span>
+      <header
+        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
+        style={{ borderColor: "#0E0E0E30" }}
+      >
+        <Link href="/" className="group">
+          <span
+            className="text-2xl tracking-tighter font-bold"
+            style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+          >
+            Byte<span style={{ color: "#FF4D00" }}>Media</span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-2 text-xs text-emerald-400 border border-emerald-800/60 bg-emerald-950/60 backdrop-blur px-3 py-1.5 rounded-full font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          Drop Ativo & Publicado
+        <div
+          className="flex items-center gap-2 text-[10px] uppercase font-semibold tracking-[0.12em] px-4 py-2 rounded-full border"
+          style={{ fontFamily: "var(--font-dm)", borderColor: "#FF4D00", color: "#FF4D00" }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#FF4D00" }} />
+          Drop Ativo
         </div>
       </header>
 
-      {/* Main Container */}
-      <section className="relative z-10 w-full max-w-3xl mx-auto px-6 py-8 space-y-8 my-auto">
-        {/* Celebration Header */}
-        <div className="text-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/20">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-          </div>
+      {/* Main */}
+      <section className="flex-1 w-full max-w-3xl mx-auto px-6 sm:px-12 py-16 flex flex-col justify-center gap-10">
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-            Seu Drop está pronto!
+        {/* Hero celebration */}
+        <div className="space-y-3">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            style={{ backgroundColor: "#FF4D00" }}
+          >
+            <CheckCircle2 className="w-7 h-7 text-white" />
+          </div>
+          <h1
+            className="text-4xl sm:text-5xl font-extrabold leading-[1.05]"
+            style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+          >
+            Seu Drop<br />está{" "}
+            <em className="not-italic" style={{ color: "#FF4D00" }}>pronto!</em>
           </h1>
-          <p className="text-zinc-400 text-sm sm:text-base max-w-lg mx-auto">
-            A IA concluiu a síntese da sua oferta. Baixe o Blueprint estratégico e compartilhe seu link de vendas com sua audiência.
+          <p
+            className="text-sm leading-relaxed max-w-md"
+            style={{ fontFamily: "var(--font-dm)", color: "#666" }}
+          >
+            Baixe o Blueprint estratégico e compartilhe seu link de vendas com sua audiência agora.
           </p>
         </div>
 
-        {/* Primary Action Card: Sales Link */}
-        <div className="p-6 rounded-2xl bg-zinc-900/90 border border-zinc-800 shadow-2xl space-y-5">
+        {/* Link de vendas — card escuro */}
+        <div className="rounded-3xl p-7 space-y-5" style={{ backgroundColor: "#0E0E0E" }}>
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Smartphone className="w-5 h-5 text-emerald-400" />
-              <h2 className="font-bold text-base text-white">Página de Vendas do Drop (B2C)</h2>
+            <div className="flex items-center gap-2.5">
+              <Smartphone className="w-5 h-5" style={{ color: "#FF4D00" }} />
+              <h2
+                className="font-bold text-base text-white"
+                style={{ fontFamily: "var(--font-syne)" }}
+              >
+                Página de Vendas (B2C)
+              </h2>
             </div>
-            <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800/60">
+            <span
+              className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-1 rounded"
+              style={{ backgroundColor: "#FF4D0015", color: "#FF4D00" }}
+            >
               Checkout PIX Ativo
             </span>
           </div>
 
-          {/* Link box */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-            <div className="flex-1 px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl font-mono text-xs sm:text-sm text-zinc-300 truncate select-all flex items-center gap-2">
-              <span className="text-zinc-600 select-none">🔗</span>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div
+              className="flex-1 px-4 py-3.5 rounded-xl font-mono text-xs sm:text-sm truncate select-all flex items-center gap-2"
+              style={{ backgroundColor: "#1a1a1a", color: "#aaa", border: "1px solid #333" }}
+            >
+              <span className="select-none">🔗</span>
               <span className="truncate">{salesLink}</span>
             </div>
 
@@ -150,22 +166,17 @@ export default function SuccessPage() {
               <button
                 type="button"
                 onClick={() => copyToClipboard(salesLink, "link")}
-                className={`flex-1 sm:flex-none px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
+                className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                style={
                   copiedLink
-                    ? "bg-emerald-600 text-white shadow-emerald-600/30"
-                    : "bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-emerald-500/20 active:scale-[0.98]"
-                }`}
+                    ? { backgroundColor: "#222", color: "#FF4D00", border: "1px solid #333", fontFamily: "var(--font-syne)" }
+                    : { backgroundColor: "#FF4D00", color: "#fff", fontFamily: "var(--font-syne)", boxShadow: "0 8px 24px -6px #FF4D0060" }
+                }
               >
                 {copiedLink ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    <span>Link Copiado!</span>
-                  </>
+                  <><Check className="w-4 h-4" /><span className="uppercase text-xs tracking-widest">Copiado!</span></>
                 ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span>Copiar Link de Vendas</span>
-                  </>
+                  <><Copy className="w-4 h-4" /><span className="uppercase text-xs tracking-widest">Copiar Link</span></>
                 )}
               </button>
 
@@ -173,8 +184,9 @@ export default function SuccessPage() {
                 href={salesLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors flex items-center justify-center"
-                title="Abrir página do drop em nova aba"
+                className="px-3.5 py-3.5 rounded-xl flex items-center justify-center transition-colors"
+                style={{ backgroundColor: "#222", color: "#888", border: "1px solid #333" }}
+                title="Abrir em nova aba"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -182,21 +194,38 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        {/* Blueprint PDF Card */}
-        <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Blueprint PDF — card claro */}
+        <div
+          className="rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          style={{ backgroundColor: "#ECEAE3" }}
+        >
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6" />
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: "#FF4D00" }}
+            >
+              <FileText className="w-6 h-6 text-white" />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-white text-base">Blueprint Estratégico (PDF)</h3>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                <h3
+                  className="font-bold text-base"
+                  style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+                >
+                  Blueprint Estratégico (PDF)
+                </h3>
+                <span
+                  className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded"
+                  style={{ backgroundColor: "#dddbd4", color: "#777" }}
+                >
                   Relatório Executivo
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
-                Contém o estudo de persona, análise de precificação, copy de alta conversão e projeção de receita.
+              <p
+                className="text-xs max-w-md leading-relaxed"
+                style={{ fontFamily: "var(--font-dm)", color: "#666" }}
+              >
+                Persona, precificação, copy de alta conversão e projeção de receita.
               </p>
             </div>
           </div>
@@ -207,29 +236,46 @@ export default function SuccessPage() {
             rel="noopener noreferrer"
             download={`blueprint-${campaignId}.pdf`}
             onClick={handleDownloadPDF}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] border border-zinc-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-md flex-shrink-0 text-center"
+            className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 flex-shrink-0"
+            style={{ backgroundColor: "#0E0E0E", color: "#fff", fontFamily: "var(--font-syne)" }}
           >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isDownloading ? "Baixando..." : "Baixar Blueprint (PDF)"}</span>
+            <Download className="w-4 h-4" style={{ color: "#FF4D00" }} />
+            <span className="uppercase text-xs tracking-widest">
+              {isDownloading ? "Baixando..." : "Baixar PDF"}
+            </span>
           </a>
         </div>
 
-        {/* Story Snippets (US11) */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-zinc-300 font-semibold text-sm">
-            <Share2 className="w-4 h-4 text-emerald-400" />
-            <span>Roteiro de Divulgação para Stories</span>
+        {/* Story Templates */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Share2 className="w-4 h-4" style={{ color: "#FF4D00" }} />
+            <span
+              className="font-bold text-sm"
+              style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+            >
+              Roteiro de Divulgação para Stories
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {storyTemplates.map((template, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/60 space-y-2.5 flex flex-col justify-between"
+                className="p-5 rounded-2xl space-y-4 flex flex-col justify-between"
+                style={{ backgroundColor: "#ECEAE3" }}
               >
                 <div>
-                  <h4 className="text-xs font-semibold text-emerald-400">{template.title}</h4>
-                  <p className="text-xs text-zinc-400 mt-1 leading-relaxed italic">
+                  <h4
+                    className="text-[10px] font-bold uppercase tracking-widest"
+                    style={{ color: "#FF4D00", fontFamily: "var(--font-dm)" }}
+                  >
+                    {template.title}
+                  </h4>
+                  <p
+                    className="text-xs mt-2 leading-relaxed italic"
+                    style={{ fontFamily: "var(--font-dm)", color: "#555" }}
+                  >
                     &quot;{template.text}&quot;
                   </p>
                 </div>
@@ -237,18 +283,17 @@ export default function SuccessPage() {
                 <button
                   type="button"
                   onClick={() => copyToClipboard(template.text, "story", idx)}
-                  className="w-full py-2 px-3 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/60 text-xs font-medium text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 px-3 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                  style={
+                    copiedStory === idx
+                      ? { backgroundColor: "#FF4D0015", color: "#FF4D00", fontFamily: "var(--font-dm)" }
+                      : { backgroundColor: "#dddbd4", color: "#555", fontFamily: "var(--font-dm)" }
+                  }
                 >
                   {copiedStory === idx ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Copiado!</span>
-                    </>
+                    <><Check className="w-3.5 h-3.5" /><span>Copiado!</span></>
                   ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-zinc-400" />
-                      <span>Copiar Texto</span>
-                    </>
+                    <><Copy className="w-3.5 h-3.5" /><span>Copiar Texto</span></>
                   )}
                 </button>
               </div>
@@ -256,24 +301,28 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        {/* Action: Create another drop */}
-        <div className="pt-4 text-center">
+        {/* Voltar */}
+        <div className="pt-2 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-emerald-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold transition-colors"
+            style={{ fontFamily: "var(--font-dm)", color: "#999" }}
           >
-            <span>Deseja criar outro Drop? Voltar para o início</span>
+            <span>Criar outro Drop</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-zinc-800/60 py-6 text-center text-xs text-zinc-500">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>ByteMedia • Drop Engine v1.0</span>
-          <span>Campanha ID: {campaignId}</span>
-        </div>
+      <footer
+        className="w-full px-6 sm:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs"
+        style={{ backgroundColor: "#0E0E0E", fontFamily: "var(--font-dm)", color: "#555" }}
+      >
+        <span>ByteMedia · Drop Engine v1.0</span>
+        <span className="font-mono text-[10px]" style={{ color: "#444" }}>
+          Campanha ID: {campaignId}
+        </span>
       </footer>
     </main>
   );

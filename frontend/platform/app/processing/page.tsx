@@ -175,127 +175,122 @@ function ProcessingContent() {
   }, [progress, isCompleted, campaignId, router]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white flex flex-col justify-between selection:bg-emerald-500 selection:text-zinc-950">
-      {/* Background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 blur-[140px] rounded-full" />
-      </div>
-
+    <main
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "#F5F4EF", color: "#0E0E0E" }}
+    >
       {/* Header */}
-      <header className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-            <Zap className="w-4 h-4 text-zinc-950 fill-zinc-950" />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-white">
-            Byte<span className="text-emerald-400">Media</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-400 border border-zinc-800 bg-zinc-900/60 backdrop-blur px-3 py-1.5 rounded-full font-mono">
-          ID: {campaignId.slice(0, 8)}...
+      <header
+        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
+        style={{ borderColor: "#0E0E0E30" }}
+      >
+        <span
+          className="text-2xl tracking-tighter font-bold"
+          style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+        >
+          Byte<span style={{ color: "#FF4D00" }}>Media</span>
+        </span>
+        <div
+          className="flex items-center gap-2 text-[10px] font-mono px-4 py-2 rounded-full border"
+          style={{ borderColor: "#0E0E0E30", color: "#777" }}
+        >
+          ID: {campaignId.slice(0, 8)}…
         </div>
       </header>
 
-      {/* Main Container */}
-      <section className="relative z-10 w-full max-w-2xl mx-auto px-6 py-8 my-auto space-y-8">
-        {/* Title and Progress Bar */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 rounded-full">
-            <Loader2 className="w-3.5 h-3.5 text-emerald-400 animate-spin" />
-            Processando Inteligência Artificial
+      {/* Main */}
+      <section className="flex-1 w-full max-w-2xl mx-auto px-6 sm:px-12 py-16 flex flex-col justify-center gap-10">
+        {/* Headline */}
+        <div className="space-y-3">
+          <div
+            className="flex items-center gap-2 text-sm uppercase font-semibold tracking-[0.18em]"
+            style={{ fontFamily: "var(--font-dm)", color: "#FF4D00" }}
+          >
+            <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#FF4D00" }} />
+            Processando
           </div>
-
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-            Sintetizando seu Drop...
+          <h1
+            className="text-4xl sm:text-5xl font-extrabold leading-[1.05]"
+            style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+          >
+            Sintetizando<br />seu{" "}
+            <em className="not-italic" style={{ color: "#FF4D00" }}>Drop.</em>
           </h1>
-          <p className="text-zinc-400 text-sm max-w-md mx-auto">
-            Aguarde alguns segundos enquanto nossos modelos estruturam sua campanha e compilam os materiais.
+          <p
+            className="text-sm leading-relaxed max-w-sm"
+            style={{ fontFamily: "var(--font-dm)", color: "#666" }}
+          >
+            Não feche esta aba — menos de 10 segundos para o seu drop estar pronto.
           </p>
+        </div>
 
-          {/* Progress Bar & Percentage */}
-          <div className="pt-2 space-y-2">
-            <div className="flex justify-between text-xs font-semibold font-mono text-zinc-400">
-              <span className="text-emerald-400">Progresso Geral</span>
-              <span>{Math.round(progress)}%</span>
-            </div>
-            <div className="w-full h-3 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden p-0.5 shadow-inner">
-              <div
-                className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-300 rounded-full transition-all duration-300 ease-out shadow-lg shadow-emerald-500/50"
-                style={{ width: `${Math.max(5, Math.min(100, progress))}%` }}
-              />
-            </div>
+        {/* Progress bar */}
+        <div className="space-y-2">
+          <div
+            className="flex justify-between text-[10px] uppercase font-bold tracking-widest"
+            style={{ fontFamily: "var(--font-dm)", color: "#999" }}
+          >
+            <span style={{ color: "#FF4D00" }}>Progresso</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <div className="w-full h-3 rounded-full overflow-hidden" style={{ backgroundColor: "#E0DED8" }}>
+            <div
+              className="h-full rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${Math.max(5, Math.min(100, progress))}%`, backgroundColor: "#FF4D00" }}
+            />
           </div>
         </div>
 
-        {/* Step list */}
-        <div className="space-y-3">
+        {/* Steps */}
+        <div className="space-y-2">
           {STEPS.map((step, idx) => {
-            const isStepCompleted =
-              progress >= 100 || idx < currentStepIndex;
-            const isStepActive =
-              !isStepCompleted && idx === currentStepIndex;
+            const isCompleted = progress >= 100 || idx < currentStepIndex;
+            const isActive = !isCompleted && idx === currentStepIndex;
             const Icon = step.icon;
-
             return (
               <div
                 key={step.id}
-                className={`p-4 rounded-xl border transition-all duration-300 flex items-center justify-between gap-4 ${
-                  isStepActive
-                    ? "bg-zinc-900/90 border-emerald-500/60 shadow-lg shadow-emerald-500/10 ring-1 ring-emerald-500/30"
-                    : isStepCompleted
-                    ? "bg-zinc-900/40 border-zinc-800/80 text-zinc-300"
-                    : "bg-zinc-950/40 border-zinc-800/40 opacity-50"
-                }`}
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300"
+                style={
+                  isActive
+                    ? { backgroundColor: "#0E0E0E", color: "#fff" }
+                    : isCompleted
+                    ? { backgroundColor: "#ECEAE3", color: "#444" }
+                    : { backgroundColor: "transparent", color: "#aaa", opacity: 0.5 }
+                }
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-                      isStepActive
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                        : isStepCompleted
-                        ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40"
-                        : "bg-zinc-900 text-zinc-600 border border-zinc-800"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-semibold text-zinc-500">
-                        0{step.id}
-                      </span>
-                      <h3
-                        className={`text-sm sm:text-base font-semibold truncate ${
-                          isStepActive
-                            ? "text-white"
-                            : isStepCompleted
-                            ? "text-zinc-200"
-                            : "text-zinc-500"
-                        }`}
-                      >
-                        {step.title}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-zinc-400 truncate mt-0.5">
-                      {step.subtitle}
-                    </p>
-                  </div>
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={
+                    isActive
+                      ? { backgroundColor: "#FF4D00", color: "#fff" }
+                      : isCompleted
+                      ? { backgroundColor: "#FF4D0015", color: "#FF4D00" }
+                      : { backgroundColor: "#E0DED8", color: "#aaa" }
+                  }
+                >
+                  <Icon className="w-4 h-4" />
                 </div>
-
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold" style={{ color: isActive ? "#FF4D00" : "#999" }}>
+                      0{step.id}
+                    </span>
+                    <span className="text-sm font-semibold truncate" style={{ fontFamily: "var(--font-syne)" }}>
+                      {step.title}
+                    </span>
+                  </div>
+                  <p className="text-xs truncate mt-0.5" style={{ fontFamily: "var(--font-dm)", opacity: 0.7 }}>
+                    {step.subtitle}
+                  </p>
+                </div>
                 <div className="flex-shrink-0">
-                  {isStepCompleted ? (
-                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                  ) : isStepActive ? (
-                    <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    </div>
+                  {isCompleted ? (
+                    <CheckCircle2 className="w-5 h-5" style={{ color: "#FF4D00" }} />
+                  ) : isActive ? (
+                    <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#FF4D00" }} />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-zinc-900 text-zinc-700 flex items-center justify-center">
-                      <Circle className="w-3.5 h-3.5" />
-                    </div>
+                    <Circle className="w-4 h-4" style={{ color: "#ccc" }} />
                   )}
                 </div>
               </div>
@@ -303,24 +298,27 @@ function ProcessingContent() {
           })}
         </div>
 
-        {/* Live Execution Terminal Log */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-4 font-mono text-xs text-zinc-400 space-y-2 shadow-inner">
-          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2 text-zinc-500">
+        {/* Terminal */}
+        <div className="rounded-2xl p-5 font-mono text-xs space-y-2" style={{ backgroundColor: "#0E0E0E" }}>
+          <div className="flex items-center justify-between pb-3 mb-1" style={{ borderBottom: "1px solid #222" }}>
             <div className="flex items-center gap-2">
-              <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-              <span>ByteMedia AI Telemetry</span>
+              <Terminal className="w-3.5 h-3.5" style={{ color: "#FF4D00" }} />
+              <span className="uppercase text-[9px] font-bold tracking-widest" style={{ color: "#555" }}>
+                ByteMedia AI Telemetry
+              </span>
             </div>
-            <span className="text-[10px] text-emerald-500 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+            <span className="text-[9px] uppercase font-bold tracking-widest flex items-center gap-1.5" style={{ color: "#FF4D00" }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-ping inline-block" style={{ backgroundColor: "#FF4D00" }} />
               LIVE
             </span>
           </div>
-
-          <div className="space-y-1 max-h-24 overflow-y-auto">
+          <div className="space-y-1.5 max-h-24 overflow-y-auto">
             {logs.map((log, i) => (
-              <div key={i} className="flex items-center gap-2 text-zinc-300">
-                <span className="text-emerald-500 select-none">›</span>
-                <span className="truncate">{log}</span>
+              <div key={i} className="flex items-center gap-2">
+                <span style={{ color: "#FF4D00" }}>›</span>
+                <span className="truncate" style={{ color: i === logs.length - 1 ? "#ddd" : "#666" }}>
+                  {log}
+                </span>
               </div>
             ))}
           </div>
@@ -328,10 +326,12 @@ function ProcessingContent() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-zinc-800/60 py-6 text-center text-xs text-zinc-500">
-        <div className="max-w-5xl mx-auto px-6 flex items-center justify-center gap-2">
-          <span>O processo leva menos de 10 segundos • Não feche esta aba</span>
-        </div>
+      <footer
+        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between text-xs border-t"
+        style={{ backgroundColor: "#0E0E0E", borderColor: "#0E0E0E", fontFamily: "var(--font-dm)", color: "#555" }}
+      >
+        <span>ByteMedia · Plataforma B2B para Criadores</span>
+        <span style={{ color: "#FF4D00", fontFamily: "var(--font-syne)" }}>Zero-Friction Drop Engine</span>
       </footer>
     </main>
   );
@@ -341,10 +341,12 @@ export default function ProcessingPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+        <main className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#F5F4EF" }}>
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-            <p className="text-zinc-400 text-sm">Carregando painel de processamento...</p>
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FF4D00" }} />
+            <p className="text-sm" style={{ fontFamily: "var(--font-dm)", color: "#555" }}>
+              Carregando painel de processamento...
+            </p>
           </div>
         </main>
       }

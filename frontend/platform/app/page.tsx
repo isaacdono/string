@@ -3,14 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Sparkles,
   ArrowRight,
   Loader2,
   AlertCircle,
-  ShieldCheck,
-  Zap,
-  BarChart3,
-  Lightbulb,
 } from "lucide-react";
 import { createCampaign } from "@/lib/api";
 
@@ -101,164 +96,284 @@ export default function HomePage() {
   const isButtonDisabled = isLoading || (touched && !validationResult.isValid) || !handle.trim();
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white flex flex-col justify-between selection:bg-emerald-500 selection:text-zinc-950">
-      {/* Background ambient glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-500/10 blur-[130px] rounded-full" />
-      </div>
-
-      {/* Header / Brand */}
-      <header className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-            <Zap className="w-4 h-4 text-zinc-950 fill-zinc-950" />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-white">
-            Byte<span className="text-emerald-400">Media</span>
+    <main
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "#F5F4EF", color: "#0E0E0E" }}
+    >
+      {/* Header */}
+      <header
+        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
+        style={{ borderColor: "#0E0E0E30" }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className="text-2xl tracking-tighter font-bold"
+            style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+          >
+            Byte<span style={{ color: "#FF4D00" }}>Media</span>
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-zinc-400 border border-zinc-800 bg-zinc-900/60 backdrop-blur px-3 py-1.5 rounded-full">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          Zero-Click Drop Platform
+
+        <div
+          className="hidden sm:flex items-center gap-2 text-[10px] uppercase font-semibold tracking-[0.12em] px-4 py-2 rounded-full border"
+          style={{
+            fontFamily: "var(--font-dm)",
+            borderColor: "#0E0E0E",
+            color: "#0E0E0E",
+          }}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{ backgroundColor: "#FF4D00" }}
+          />
+          Drop Platform Ativo
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 w-full max-w-2xl mx-auto px-6 py-8 text-center space-y-6 my-auto">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 rounded-full shadow-inner">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            NVIDIA Nemotron AI Engine
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-100 to-zinc-400 leading-[1.1]">
-            Monetize sua audiência em segundos.
-          </h1>
-
-          <p className="text-zinc-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-            Digite seu perfil e sua ideia. Nossa IA analisa seus seguidores, sintetiza a oferta ideal, gera o Blueprint em PDF e cria seu checkout PIX automático.
+      {/* Hero */}
+      <section className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-12 py-16 sm:py-24 flex flex-col justify-center gap-16">
+        {/* Eyebrow */}
+        <div className="flex items-start gap-6">
+          <div
+            className="hidden sm:block w-14 h-0.5 mt-3 flex-shrink-0"
+            style={{ backgroundColor: "#FF4D00" }}
+          />
+          <p
+            className="text-sm uppercase font-semibold tracking-[0.18em]"
+            style={{ fontFamily: "var(--font-dm)", color: "#FF4D00" }}
+          >
+            IA Generativa · PIX Automático · Blueprint em PDF
           </p>
         </div>
 
-        {/* Form */}
-        <div className="w-full max-w-lg mx-auto space-y-4 text-left">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Handle Input */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                Perfil do Criador
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-zinc-500 font-semibold text-base">
-                  @
+        {/* Headline + Form side by side on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-16 items-start">
+          {/* Left: Headline */}
+          <div className="space-y-6">
+            <h1
+              className="text-5xl sm:text-6xl leading-[1.0] font-extrabold"
+              style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+            >
+              Monetize<br />
+              sua<br />
+              audiência<br />
+              em{" "}
+              <em
+                className="not-italic"
+                style={{ color: "#FF4D00" }}
+              >
+                segundos.
+              </em>
+            </h1>
+            <p
+              className="text-base leading-relaxed max-w-sm"
+              style={{ fontFamily: "var(--font-dm)", color: "#555550" }}
+            >
+              Digite seu perfil e sua ideia. A IA analisa, cria o copy, gera o checkout PIX e manda o Blueprint pra você em menos de 2 minutos.
+            </p>
+
+            {/* Value props — horizontal, sem cards */}
+            <div className="pt-4 flex flex-col gap-3">
+              {[
+                ["Sem login, sem burocracia", "—"],
+                ["Checkout PIX em segundos", "—"],
+                ["Blueprint PDF pronto pra usar", "—"],
+              ].map(([label, dash], i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <span
+                    className="text-base font-bold"
+                    style={{ color: "#FF4D00", fontFamily: "var(--font-syne)" }}
+                  >
+                    {dash}
+                  </span>
+                  <span
+                    className="text-sm"
+                    style={{ fontFamily: "var(--font-dm)", color: "#444" }}
+                  >
+                    {label}
+                  </span>
                 </div>
-                <input
-                  type="text"
-                  value={handle.startsWith("@") ? handle.substring(1) : handle}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Form card */}
+          <div
+            className="rounded-3xl p-8 space-y-6 border"
+            style={{
+              backgroundColor: "#0E0E0E",
+              borderColor: "#0E0E0E",
+            }}
+          >
+            <div className="space-y-1">
+              <h2
+                className="text-xl font-bold text-white"
+                style={{ fontFamily: "var(--font-syne)" }}
+              >
+                Criar meu Drop
+              </h2>
+              <p
+                className="text-sm"
+                style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+              >
+                Cole seu @ e conte a ideia. Fazemos o resto.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Handle Input */}
+              <div className="space-y-2">
+                <label
+                  className="block text-[10px] font-semibold uppercase tracking-[0.14em]"
+                  style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+                >
+                  Perfil do Criador
+                </label>
+                <div className="relative">
+                  <div
+                    className="absolute inset-y-0 left-4 flex items-center pointer-events-none font-semibold"
+                    style={{ color: "#FF4D00" }}
+                  >
+                    @
+                  </div>
+                  <input
+                    type="text"
+                    value={handle.startsWith("@") ? handle.substring(1) : handle}
+                    onChange={handleInputChange}
+                    onBlur={handleBlur}
+                    disabled={isLoading}
+                    placeholder="seu_perfil"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    className={`w-full pl-9 pr-4 py-3.5 rounded-xl text-white text-base focus:outline-none transition-all duration-200 ${
+                      touched && !validationResult.isValid
+                        ? "ring-2 ring-red-500/50"
+                        : touched && validationResult.isValid
+                        ? "ring-2 ring-[#FF4D00]/50"
+                        : "focus:ring-2 focus:ring-[#FF4D00]/40"
+                    }`}
+                    style={{
+                      backgroundColor: "#1a1a1a",
+                      fontFamily: "var(--font-dm)",
+                      border: "1px solid #333",
+                    }}
+                  />
+                </div>
+                {touched && !validationResult.isValid && validationResult.message && (
+                  <div
+                    className="flex items-center gap-1.5 text-xs px-1"
+                    style={{ fontFamily: "var(--font-dm)", color: "#f87171" }}
+                  >
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{validationResult.message}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label
+                    className="text-[10px] font-semibold uppercase tracking-[0.14em]"
+                    style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+                  >
+                    Ideia do Drop
+                  </label>
+                  <span
+                    className="text-[10px] uppercase tracking-wider"
+                    style={{ fontFamily: "var(--font-dm)", color: "#555" }}
+                  >
+                    Opcional
+                  </span>
+                </div>
+                <textarea
+                  value={description}
+                  onChange={handleDescriptionChange}
                   disabled={isLoading}
-                  placeholder="seu_perfil"
-                  autoComplete="off"
-                  autoCapitalize="none"
-                  spellCheck="false"
-                  className={`w-full pl-9 pr-4 py-3 bg-zinc-900/90 border rounded-xl text-white placeholder-zinc-500 text-base focus:outline-none transition-all duration-200 shadow-inner ${
-                    touched && !validationResult.isValid
-                      ? "border-red-500/70 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                      : touched && validationResult.isValid
-                      ? "border-emerald-500/70 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                      : "border-zinc-700/80 hover:border-zinc-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                  }`}
+                  rows={3}
+                  placeholder="Ex: E-book de planilhas de finanças pessoais por R$ 47,00..."
+                  className="w-full px-4 py-3 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF4D00]/40 resize-none transition-all duration-200"
+                  style={{
+                    backgroundColor: "#1a1a1a",
+                    fontFamily: "var(--font-dm)",
+                    border: "1px solid #333",
+                    color: "#e0e0e0",
+                  }}
                 />
               </div>
 
-              {/* Validation Error Message */}
-              {touched && !validationResult.isValid && validationResult.message && (
-                <div className="flex items-center gap-2 text-xs text-red-400 px-1 animate-fadeIn">
-                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>{validationResult.message}</span>
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isButtonDisabled}
+                className="w-full py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2"
+                style={
+                  isButtonDisabled
+                    ? {
+                        backgroundColor: "#2a2a2a",
+                        color: "#555",
+                        fontFamily: "var(--font-syne)",
+                        cursor: "not-allowed",
+                      }
+                    : {
+                        backgroundColor: "#FF4D00",
+                        color: "#fff",
+                        fontFamily: "var(--font-syne)",
+                        boxShadow: "0 8px 24px -6px #FF4D0060",
+                      }
+                }
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="uppercase text-xs tracking-widest">Gerando com IA...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="uppercase text-xs tracking-widest">Gerar Drop com IA</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* API Error */}
+            {apiError && (
+              <div
+                className="p-4 rounded-xl text-sm flex items-start gap-3"
+                style={{
+                  backgroundColor: "#2a0a0a",
+                  border: "1px solid #7f1d1d",
+                  color: "#fca5a5",
+                  fontFamily: "var(--font-dm)",
+                }}
+              >
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-400" />
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-red-200 text-xs">Falha ao iniciar campanha</p>
+                  <p className="text-xs opacity-80 leading-relaxed">{apiError}</p>
                 </div>
-              )}
-            </div>
-
-            {/* Description / Idea Text Area */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                  <Lightbulb className="w-3.5 h-3.5 text-emerald-400" />
-                  Ideia / Formato do Drop
-                </label>
-                <span className="text-[11px] text-zinc-500">Opcional</span>
               </div>
-              <textarea
-                value={description}
-                onChange={handleDescriptionChange}
-                disabled={isLoading}
-                rows={3}
-                placeholder="Ex: Quero lançar um e-book com planilha de templates de finanças pessoais por R$ 47,00 com vagas limitadas..."
-                className="w-full px-4 py-3 bg-zinc-900/90 border border-zinc-700/80 hover:border-zinc-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl text-white placeholder-zinc-500 text-sm focus:outline-none transition-all duration-200 resize-none shadow-inner"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isButtonDisabled}
-              className={`w-full py-3.5 rounded-xl font-semibold text-base transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
-                isButtonDisabled
-                  ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/50"
-                  : "bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 shadow-emerald-500/25 hover:shadow-emerald-500/40"
-              }`}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Iniciando Inteligência Artificial...</span>
-                </>
-              ) : (
-                <>
-                  <span>Gerar Drop com IA</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* API / Network Error Banner */}
-          {apiError && (
-            <div className="p-4 rounded-xl bg-red-950/50 border border-red-800/60 text-red-300 text-sm flex items-start gap-3 animate-fadeIn">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-400 mt-0.5" />
-              <div className="space-y-1">
-                <p className="font-semibold text-red-200">Falha ao iniciar campanha</p>
-                <p className="text-xs text-red-300/90 leading-relaxed">{apiError}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Value props bullets */}
-          <div className="pt-2 grid grid-cols-3 gap-2 text-center text-xs text-zinc-400">
-            <div className="p-2.5 rounded-lg bg-zinc-900/40 border border-zinc-800/60 flex flex-col items-center gap-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="font-medium">Sem Login</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-zinc-900/40 border border-zinc-800/60 flex flex-col items-center gap-1">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="font-medium">IA Nemotron</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-zinc-900/40 border border-zinc-800/60 flex flex-col items-center gap-1">
-              <BarChart3 className="w-4 h-4 text-emerald-400" />
-              <span className="font-medium">PIX Instantâneo</span>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-zinc-800/60 py-6 text-center text-xs text-zinc-500">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>ByteMedia MVP • Plataforma B2B para Criadores</span>
-          <span>Zero-Friction Engine • Next.js 14 App Router</span>
-        </div>
+      {/* Bottom strip — preto com acento laranja */}
+      <footer
+        className="w-full px-6 sm:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t"
+        style={{
+          backgroundColor: "#0E0E0E",
+          borderColor: "#0E0E0E",
+          color: "#555",
+          fontFamily: "var(--font-dm)",
+        }}
+      >
+        <span style={{ color: "#888" }}>ByteMedia · Plataforma B2B para Criadores</span>
+        <span style={{ color: "#FF4D00", fontFamily: "var(--font-syne)" }}>
+          Zero-Friction Drop Engine
+        </span>
       </footer>
     </main>
   );
