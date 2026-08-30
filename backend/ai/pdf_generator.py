@@ -16,6 +16,7 @@ def generate_blueprint_pdf(
     hooks: List[str],
     benefits: List[str],
     blueprint_content: str,
+    primary_color: str = "#6366F1",
     output_dir: str = "/app/static/blueprints",
 ) -> str:
     """
@@ -42,10 +43,10 @@ def generate_blueprint_pdf(
         doc = SimpleDocTemplate(
             pdf_path,
             pagesize=letter,
-            leftMargin=40,
-            rightMargin=40,
-            topMargin=40,
-            bottomMargin=40,
+            leftMargin=50,
+            rightMargin=50,
+            topMargin=50,
+            bottomMargin=50,
         )
 
         styles = getSampleStyleSheet()
@@ -53,41 +54,42 @@ def generate_blueprint_pdf(
         title_style = ParagraphStyle(
             "DocTitle",
             parent=styles["Heading1"],
-            fontSize=22,
-            leading=26,
+            fontSize=20,
+            leading=24,
             textColor=colors.HexColor("#0F172A"),
             fontName="Helvetica-Bold",
             alignment=TA_CENTER,
-            spaceAfter=4,
+            spaceAfter=6,
         )
 
         subtitle_style = ParagraphStyle(
             "DocSubTitle",
             parent=styles["Normal"],
-            fontSize=11,
-            leading=15,
-            textColor=colors.HexColor("#6366F1"),
+            fontSize=10,
+            leading=14,
+            textColor=colors.HexColor(primary_color),
             fontName="Helvetica-Bold",
             alignment=TA_CENTER,
-            spaceAfter=15,
+            spaceAfter=18,
         )
 
         section_heading = ParagraphStyle(
             "SectionHeading",
             parent=styles["Heading2"],
-            fontSize=13,
-            leading=17,
-            textColor=colors.HexColor("#1E293B"),
+            fontSize=12,
+            leading=16,
+            textColor=colors.HexColor("#0F172A"),
             fontName="Helvetica-Bold",
-            spaceBefore=12,
+            spaceBefore=14,
             spaceAfter=6,
+            keepWithNext=True,
         )
 
         body_style = ParagraphStyle(
             "Body",
             parent=styles["Normal"],
-            fontSize=10,
-            leading=14,
+            fontSize=9.5,
+            leading=14.5,
             textColor=colors.HexColor("#334155"),
             fontName="Helvetica",
             spaceAfter=4,
@@ -97,11 +99,29 @@ def generate_blueprint_pdf(
             "Bullet",
             parent=styles["Normal"],
             fontSize=9.5,
-            leading=13.5,
-            textColor=colors.HexColor("#1E293B"),
+            leading=14.5,
+            textColor=colors.HexColor("#334155"),
             fontName="Helvetica",
-            leftIndent=15,
+            leftIndent=12,
             spaceAfter=3,
+        )
+
+        table_label_style = ParagraphStyle(
+            "TableLabel",
+            parent=styles["Normal"],
+            fontSize=9.5,
+            leading=13.5,
+            textColor=colors.HexColor("#475569"),
+            fontName="Helvetica-Bold",
+        )
+
+        table_value_style = ParagraphStyle(
+            "TableValue",
+            parent=styles["Normal"],
+            fontSize=9.5,
+            leading=13.5,
+            textColor=colors.HexColor("#0F172A"),
+            fontName="Helvetica",
         )
 
         elements = []
@@ -109,66 +129,63 @@ def generate_blueprint_pdf(
         # Document Header
         elements.append(Paragraph("⚡ BYTEMEDIA • BLUEPRINT ESTRATÉGICO DE DROP", title_style))
         elements.append(Paragraph(f"Plano Executivo de Lançamento — Criador: <b>{handle}</b>", subtitle_style))
-        elements.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#6366F1"), spaceAfter=12))
+        elements.append(HRFlowable(width="100%", thickness=1.0, color=colors.HexColor(primary_color), spaceAfter=14))
 
         # Executive Summary Table
         table_data = [
             [
-                Paragraph("<b>Produto:</b>", body_style),
-                Paragraph(title or "Drop Exclusivo", body_style),
+                Paragraph("Produto", table_label_style),
+                Paragraph(title or "Drop Exclusivo", table_value_style),
             ],
             [
-                Paragraph("<b>Tipo de Entrega:</b>", body_style),
-                Paragraph(product_type.capitalize() if product_type else "Digital", body_style),
+                Paragraph("Tipo de Entrega", table_label_style),
+                Paragraph(product_type.capitalize() if product_type else "Digital", table_value_style),
             ],
             [
-                Paragraph("<b>Ticket Recomendado:</b>", body_style),
-                Paragraph(f"R$ {price:.2f}", body_style),
+                Paragraph("Ticket Recomendado", table_label_style),
+                Paragraph(f"R$ {price:.2f}", table_value_style),
             ],
             [
-                Paragraph("<b>Limite de Escassez:</b>", body_style),
-                Paragraph(f"{scarcity_limit} unidades/vagas", body_style),
+                Paragraph("Limite de Escassez", table_label_style),
+                Paragraph(f"{scarcity_limit} unidades/vagas", table_value_style),
             ],
         ]
 
-        summary_table = Table(table_data, colWidths=[130, 380])
+        summary_table = Table(table_data, colWidths=[130, 382])
         summary_table.setStyle(
             TableStyle([
                 ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
-                ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#E2E8F0")),
-                ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E1")),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#E2E8F0")),
+                ("LINEBELOW", (0, 0), (-1, -2), 0.5, colors.HexColor("#F1F5F9")),
+                ("TOPPADDING", (0, 0), (-1, -1), 8),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                ("LEFTPADDING", (0, 0), (-1, -1), 12),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 12),
             ])
         )
         elements.append(summary_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 12))
 
         # Value Proposition & Subtitle
         if subtitle:
             elements.append(Paragraph("📌 Proposta de Valor da Oferta", section_heading))
             elements.append(Paragraph(subtitle, body_style))
-            elements.append(Spacer(1, 6))
 
         # Hooks
         if hooks:
             elements.append(Paragraph("🎯 Ganchos de Atenção (Hooks de Conversão)", section_heading))
             for h in hooks:
                 elements.append(Paragraph(f"• {h}", bullet_style))
-            elements.append(Spacer(1, 6))
 
         # Benefits
         if benefits:
             elements.append(Paragraph("💎 Benefícios Principais do Drop", section_heading))
             for b in benefits:
                 elements.append(Paragraph(f"✓ {b}", bullet_style))
-            elements.append(Spacer(1, 6))
 
         # Marketing & Launch Roadmap
         if blueprint_content:
-            elements.append(Paragraph("🚀 Roteiro de Lançamento & Cronograma de Stories", section_heading))
+            elements.append(Paragraph("🚀 Estratégia de Marketing & Lançamento", section_heading))
             paragraphs = blueprint_content.strip().split("\n\n")
             for p in paragraphs:
                 if p.strip():
@@ -177,7 +194,7 @@ def generate_blueprint_pdf(
 
         # Footer
         elements.append(Spacer(1, 15))
-        elements.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CBD5E1"), spaceAfter=6))
+        elements.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#E2E8F0"), spaceAfter=6))
         footer_style = ParagraphStyle(
             "Footer",
             parent=styles["Normal"],

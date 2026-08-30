@@ -43,6 +43,7 @@ class AnalyzeCampaignUseCase:
         copy_data = analysis.get("copy_data", {})
         scarcity_limit = analysis.get("scarcity_limit", 50)
         blueprint_content = analysis.get("blueprint_content", "")
+        primary_color = theme_config.get("primary") or "#6366F1"
 
         try:
             self.pdf_generator.generate_pdf(
@@ -57,6 +58,7 @@ class AnalyzeCampaignUseCase:
                 benefits=copy_data.get("benefits", []),
                 blueprint_content=blueprint_content,
                 output_dir=blueprints_dir,
+                primary_color=primary_color,
             )
         except Exception as e:
             logger.error(f"Error synthesizing PDF: {e}")

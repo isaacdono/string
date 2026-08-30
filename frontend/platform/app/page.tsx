@@ -8,6 +8,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { createCampaign } from "@/lib/api";
+import Navbar from "@/components/Navbar";
+import HowItWorks from "@/components/HowItWorks";
+import WhoWeAre from "@/components/WhoWeAre";
 
 export default function HomePage() {
   const router = useRouter();
@@ -101,37 +104,10 @@ export default function HomePage() {
       style={{ backgroundColor: "#F5F4EF", color: "#0E0E0E" }}
     >
       {/* Header */}
-      <header
-        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
-        style={{ borderColor: "#0E0E0E30" }}
-      >
-        <div className="flex items-center gap-2">
-          <span
-            className="text-2xl tracking-tighter font-bold"
-            style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
-          >
-            Byte<span style={{ color: "#FF4D00" }}>Media</span>
-          </span>
-        </div>
-
-        <div
-          className="hidden sm:flex items-center gap-2 text-[10px] uppercase font-semibold tracking-[0.12em] px-4 py-2 rounded-full border"
-          style={{
-            fontFamily: "var(--font-dm)",
-            borderColor: "#0E0E0E",
-            color: "#0E0E0E",
-          }}
-        >
-          <span
-            className="w-1.5 h-1.5 rounded-full animate-pulse"
-            style={{ backgroundColor: "#FF4D00" }}
-          />
-          Drop Platform Ativo
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero */}
-      <section className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-12 py-16 sm:py-24 flex flex-col justify-center gap-16">
+      <section id="home" className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-12 py-16 sm:py-24 flex flex-col justify-center gap-16">
         {/* Eyebrow */}
         <div className="flex items-start gap-6">
           <div
@@ -359,6 +335,12 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* How It Works Section */}
+      <HowItWorks />
+
+      {/* Who We Are Section */}
+      <WhoWeAre />
 
       {/* Bottom strip — preto com acento laranja */}
       <footer

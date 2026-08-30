@@ -50,17 +50,17 @@ class OpenRouterLLMService(ILLMService):
             },
             "scarcity_limit": 50,
             "blueprint_content": (
-                f"ESTRATÉGIA DE LANÇAMENTO — DROP {handle}\n\n"
-                f"1. FASE DE AQUECIMENTO (D-3 a D-1):\n"
-                f"- Stories 1: Abrir caixinha de perguntas sobre '{topic}'.\n"
-                f"- Stories 2: Compartilhar o bastidor e dores comuns da audiência.\n"
-                f"- Stories 3: Anunciar que um lote especial limitado a 50 pessoas será liberado.\n\n"
-                f"2. FASE DE LANÇAMENTO (D-Day):\n"
-                f"- Stories Manhã: Liberação do link oficial de checkout Pix.\n"
-                f"- Stories Tarde: Prova social e contagem de vagas restantes.\n"
-                f"- Stories Noite: Alerta de últimas vagas antes do encerramento definitivo.\n\n"
-                f"3. PROJEÇÃO DE FATURAMENTO:\n"
-                f"- 50 vagas a R$ 97,00 = R$ 4.850,00 de receita direta em 24h."
+                f"ESTRATÉGIA DE MARKETING E PLANO DE LANÇAMENTO — DROP {handle}\n\n"
+                f"1. AQUECIMENTO E ANTECIPAÇÃO:\n"
+                f"- Compartilhar os bastidores do desenvolvimento do produto e identificar as dores da audiência.\n"
+                f"- Criar caixas de perguntas sobre '{topic}' para gerar conexão e interesse.\n"
+                f"- Anunciar que um lote especial limitado de lançamento será liberado em breve.\n\n"
+                f"2. CRONOGRAMA DE LANÇAMENTO:\n"
+                f"- D-Day: Liberação oficial do link de checkout com condições especiais de abertura.\n"
+                f"- Compartilhar provas sociais em tempo real e destacar a escassez das vagas.\n"
+                f"- Realizar alertas de encerramento do lote para acelerar a tomada de decisão.\n\n"
+                f"3. PROJEÇÃO DE RESULTADOS:\n"
+                f"- Meta ideal de 50 vagas preenchidas a R$ 97,00, gerando um faturamento estimado de R$ 4.850,00."
             ),
         }
 
@@ -92,7 +92,7 @@ class OpenRouterLLMService(ILLMService):
             '    "benefits": ["Benefício 1", "Benefício 2", "Benefício 3", "Benefício 4"]\n'
             "  },\n"
             '  "scarcity_limit": 50,\n'
-            '  "blueprint_content": "Roteiro executivo completo de marketing para Stories e lançamento do drop..."\n'
+            '  "blueprint_content": "Estratégia de marketing e plano de lançamento detalhados para o drop (focado em aquecimento, cronograma geral e projeções)..."\n'
             "}"
         )
 
@@ -221,6 +221,7 @@ class ReportLabPdfGenerator(IPdfGenerator):
         benefits: List[str],
         blueprint_content: str,
         output_dir: str,
+        primary_color: str = "#6366F1",
     ) -> str:
         """Invokes ReportLab PDF compiler function."""
         return generate_blueprint_pdf(
@@ -234,5 +235,6 @@ class ReportLabPdfGenerator(IPdfGenerator):
             hooks=hooks,
             benefits=benefits,
             blueprint_content=blueprint_content,
+            primary_color=primary_color,
             output_dir=output_dir,
         )

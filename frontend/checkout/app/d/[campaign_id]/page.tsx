@@ -142,7 +142,7 @@ export default function DropSalesPage() {
         {/* Scarcity Block */}
         <section
           className="p-4 rounded-2xl space-y-3"
-          style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}` }}
+          style={{ backgroundColor: "transparent", border: `1px solid ${cardBorder}` }}
         >
           <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
             <div className="flex items-center gap-1.5" style={{ color: "#F59E0B" }}>
@@ -240,7 +240,7 @@ export default function DropSalesPage() {
                 key={i}
                 className="px-3 py-1.5 rounded-xl text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5"
                 style={{
-                  backgroundColor: cardBg,
+                  backgroundColor: "transparent",
                   border: `1px solid ${cardBorder}`,
                   color: textColor,
                   fontFamily: "var(--font-dm)",
@@ -296,7 +296,7 @@ export default function DropSalesPage() {
               <div
                 key={i}
                 className="p-4 rounded-2xl space-y-2 text-xs"
-                style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}` }}
+                style={{ backgroundColor: "transparent", border: `1px solid ${cardBorder}` }}
               >
                 <div className="flex items-center justify-between">
                   <span
@@ -326,7 +326,7 @@ export default function DropSalesPage() {
         {/* Trust badges */}
         <section
           className="p-4 rounded-2xl text-center space-y-2"
-          style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}` }}
+          style={{ backgroundColor: "transparent", border: `1px solid ${cardBorder}` }}
         >
           <div
             className="flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-[10px]"
@@ -392,15 +392,21 @@ export default function DropSalesPage() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm">
           <div
             className="w-full max-w-md rounded-t-3xl p-6 space-y-6 max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: "#0E0E0E" }}
+            style={{
+              backgroundColor: isDarkBg ? "#121214" : "#FFFFFF",
+              color: textColor,
+            }}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-zinc-900 pb-4">
+            <div
+              className="flex items-center justify-between border-b pb-4"
+              style={{ borderColor: cardBorder }}
+            >
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4" style={{ color: primaryColor }} />
                 <h3
-                  className="font-bold text-sm uppercase tracking-wider text-white"
-                  style={{ fontFamily: "var(--font-syne)" }}
+                  className="font-bold text-sm uppercase tracking-wider"
+                  style={{ fontFamily: "var(--font-syne)", color: textColor }}
                 >
                   {checkoutStep === "form" && "Checkout Seguro PIX"}
                   {checkoutStep === "pix" && "Pagamento via PIX"}
@@ -411,7 +417,11 @@ export default function DropSalesPage() {
                 type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
-                style={{ backgroundColor: "#222", color: "#777", border: "1px solid #333" }}
+                style={{
+                  backgroundColor: isDarkBg ? "#1F1F22" : "#E5E7EB",
+                  color: subtextColor,
+                  border: `1px solid ${cardBorder}`,
+                }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -422,9 +432,15 @@ export default function DropSalesPage() {
               <form onSubmit={handleCheckoutSubmit} className="space-y-4">
                 <div
                   className="p-3.5 rounded-xl flex items-center justify-between text-xs"
-                  style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
+                  style={{
+                    backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                    border: `1px solid ${cardBorder}`,
+                  }}
                 >
-                  <span className="text-zinc-400 truncate max-w-[200px]" style={{ fontFamily: "var(--font-dm)" }}>
+                  <span
+                    className="truncate max-w-[200px]"
+                    style={{ fontFamily: "var(--font-dm)", color: subtextColor }}
+                  >
                     {campaign?.copy_data.title}
                   </span>
                   <span className="font-bold font-mono" style={{ color: primaryColor }}>
@@ -439,7 +455,7 @@ export default function DropSalesPage() {
                   <div key={label} className="space-y-1.5">
                     <label
                       className="block text-[10px] font-bold uppercase tracking-wider"
-                      style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+                      style={{ fontFamily: "var(--font-dm)", color: subtextColor }}
                     >
                       {label}
                     </label>
@@ -448,8 +464,15 @@ export default function DropSalesPage() {
                       value={value}
                       onChange={(e) => setter(e.target.value)}
                       placeholder={placeholder}
-                      className="w-full px-3.5 py-3 rounded-xl text-white placeholder-zinc-600 text-sm focus:outline-none transition-colors"
-                      style={{ backgroundColor: "#1a1a1a", border: "1px solid #333", fontFamily: "var(--font-dm)" }}
+                      className={`w-full px-3.5 py-3 rounded-xl text-sm focus:outline-none transition-colors ${
+                        isDarkBg ? "placeholder-zinc-600" : "placeholder-zinc-400"
+                      }`}
+                      style={{
+                        backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                        border: `1px solid ${cardBorder}`,
+                        color: textColor,
+                        fontFamily: "var(--font-dm)",
+                      }}
                     />
                     {error && (
                       <p className="text-[11px] text-red-400 px-1" style={{ fontFamily: "var(--font-dm)" }}>
@@ -462,7 +485,7 @@ export default function DropSalesPage() {
                 <div className="space-y-1.5">
                   <label
                     className="block text-[10px] font-bold uppercase tracking-wider"
-                    style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+                    style={{ fontFamily: "var(--font-dm)", color: subtextColor }}
                   >
                     CPF (Exigido pelo Asaas PIX)
                   </label>
@@ -472,8 +495,15 @@ export default function DropSalesPage() {
                     onChange={(e) => setCpf(formatCPF(e.target.value))}
                     maxLength={14}
                     placeholder="000.000.000-00"
-                    className="w-full px-3.5 py-3 rounded-xl text-white placeholder-zinc-600 text-sm font-mono focus:outline-none transition-colors"
-                    style={{ backgroundColor: "#1a1a1a", border: "1px solid #333", fontFamily: "var(--font-dm)" }}
+                    className={`w-full px-3.5 py-3 rounded-xl text-sm font-mono focus:outline-none transition-colors ${
+                      isDarkBg ? "placeholder-zinc-600" : "placeholder-zinc-400"
+                    }`}
+                    style={{
+                      backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                      border: `1px solid ${cardBorder}`,
+                      color: textColor,
+                      fontFamily: "var(--font-dm)",
+                    }}
                   />
                   {formErrors.cpf && (
                     <p className="text-[11px] text-red-400 px-1" style={{ fontFamily: "var(--font-dm)" }}>
@@ -516,7 +546,7 @@ export default function DropSalesPage() {
             {checkoutStep === "pix" && (
               <div className="space-y-6 text-center">
                 <div className="space-y-1">
-                  <p className="text-xs text-zinc-400" style={{ fontFamily: "var(--font-dm)" }}>
+                  <p className="text-xs" style={{ fontFamily: "var(--font-dm)", color: subtextColor }}>
                     Escaneie o QR Code ou use a chave Copia e Cola no app do seu banco:
                   </p>
                   <p
@@ -542,7 +572,7 @@ export default function DropSalesPage() {
                 <div className="space-y-2 text-left">
                   <label
                     className="block text-[10px] font-bold uppercase tracking-wider"
-                    style={{ fontFamily: "var(--font-dm)", color: "#888" }}
+                    style={{ fontFamily: "var(--font-dm)", color: subtextColor }}
                   >
                     Código PIX Copia e Cola
                   </label>
@@ -551,8 +581,12 @@ export default function DropSalesPage() {
                       type="text"
                       readOnly
                       value={pixCopyPaste}
-                      className="flex-1 px-3 py-2.5 rounded-xl font-mono text-xs text-zinc-400 truncate"
-                      style={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
+                      className="flex-1 px-3 py-2.5 rounded-xl font-mono text-xs truncate"
+                      style={{
+                        backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                        border: `1px solid ${cardBorder}`,
+                        color: subtextColor,
+                      }}
                     />
                     <button
                       type="button"
@@ -575,22 +609,27 @@ export default function DropSalesPage() {
 
                 <div
                   className="p-3.5 rounded-xl flex items-center justify-center gap-2 text-xs"
-                  style={{ backgroundColor: "#1a1a1a", color: "#777", fontFamily: "var(--font-dm)" }}
+                  style={{
+                    backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                    border: `1px solid ${cardBorder}`,
+                    color: subtextColor,
+                    fontFamily: "var(--font-dm)",
+                  }}
                 >
                   <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: primaryColor }} />
                   Aguardando compensação automática...
                 </div>
 
-                <div className="pt-4 border-t border-zinc-900">
+                <div className="pt-4 border-t" style={{ borderColor: cardBorder }}>
                   <button
                     type="button"
                     onClick={handleSimulatePayment}
                     disabled={isSimulating}
                     className="w-full py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
                     style={{
-                      backgroundColor: "#1a1a1a",
-                      color: "#888",
-                      border: "1px solid #333",
+                      backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                      color: subtextColor,
+                      border: `1px solid ${cardBorder}`,
                       fontFamily: "var(--font-dm)",
                     }}
                   >
@@ -616,26 +655,36 @@ export default function DropSalesPage() {
 
                 <div className="space-y-2">
                   <h4
-                    className="text-2xl font-black text-white"
-                    style={{ fontFamily: "var(--font-syne)" }}
+                    className="text-2xl font-black"
+                    style={{ fontFamily: "var(--font-syne)", color: textColor }}
                   >
                     Pagamento Confirmado! 🎉
                   </h4>
-                  <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed" style={{ fontFamily: "var(--font-dm)" }}>
+                  <p
+                    className="text-xs max-w-sm mx-auto leading-relaxed"
+                    style={{ fontFamily: "var(--font-dm)", color: subtextColor }}
+                  >
                     Comprovante e instruções de acesso enviadas para:
                   </p>
-                  <p className="text-sm font-bold font-mono text-white mt-1">
+                  <p
+                    className="text-sm font-bold font-mono mt-1"
+                    style={{ color: textColor }}
+                  >
                     {email || "seu-email@exemplo.com"}
                   </p>
                 </div>
 
                 <div
                   className="p-4 rounded-xl text-left text-xs space-y-2 font-mono"
-                  style={{ backgroundColor: "#1a1a1a", color: "#777" }}
+                  style={{
+                    backgroundColor: isDarkBg ? "#1F1F22" : "#F3F4F6",
+                    border: `1px solid ${cardBorder}`,
+                    color: subtextColor,
+                  }}
                 >
                   <div className="flex justify-between">
                     <span>Pedido:</span>
-                    <span className="text-zinc-200 font-bold">
+                    <span className="font-bold" style={{ color: textColor }}>
                       {orderId ? orderId.slice(0, 8) : "ORD-9912"}
                     </span>
                   </div>
@@ -645,7 +694,7 @@ export default function DropSalesPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Total:</span>
-                    <span className="text-zinc-200 font-bold">{formatCurrency(campaign?.price || 97.0)}</span>
+                    <span className="font-bold" style={{ color: textColor }}>{formatCurrency(campaign?.price || 97.0)}</span>
                   </div>
                 </div>
 

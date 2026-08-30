@@ -38,6 +38,7 @@ class IPdfGenerator(ABC):
         benefits: List[str],
         blueprint_content: str,
         output_dir: str,
+        primary_color: str = "#6366F1",
     ) -> str:
         """Generate strategic campaign PDF blueprint."""
         pass
