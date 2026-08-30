@@ -17,12 +17,28 @@ export interface CreateCampaignResponse {
 }
 
 export interface CampaignStatusResponse {
-  campaign_id: string;
-  status: "pending" | "analyzing" | "generating" | "synthesizing" | "active" | "failed";
+  id: string;
+  campaign_id?: string;
+  status: "pending" | "analyzing" | "generating" | "synthesizing" | "active" | "failed" | string;
   progress?: number;
   handle?: string;
   pdf_url?: string;
   checkout_url?: string;
+  price?: number;
+  product_type?: string;
+  copy_data?: {
+    title?: string;
+    subtitle?: string;
+    hooks?: string[];
+    benefits?: string[];
+    alternative_products?: Array<{
+      title: string;
+      description: string;
+      product_type: string;
+      price: number;
+    }>;
+  };
+  description?: string;
 }
 
 /**
@@ -100,4 +116,41 @@ export async function fetchCampaignStatus(
     // Silently catch network errors if polling endpoint is in progress
   }
   return null;
+}
+
+/**
+ * Regenerates an existing campaign with a new product idea/description.
+ */
+export async function regenerateCampaign(
+  campaignId: string,
+  description: string
+): Promise<any> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/platform/campaign/${campaignId}/regenerate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ description: description.trim() }),
+    }
+  );
+
+  if (!response.ok) {
+    let errorDetail = "Erro ao regenerar campanha no servidor.";
+    try {
+      const errorJson = await response.json();
+      if (errorJson?.detail) {
+        errorDetail = Array.isArray(errorJson.detail)
+          ? errorJson.detail.map((d: any) => d.msg || d).join(", ")
+          : String(errorJson.detail);
+      }
+    } catch {
+      // Fallback message
+    }
+    throw new Error(errorDetail);
+  }
+
+  return response.json();
 }

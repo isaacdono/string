@@ -72,6 +72,10 @@ class CampaignDetailResponse(BaseModel):
     created_at: Optional[str] = None
 
 
+class CampaignRegenerateRequest(BaseModel):
+    description: str = Field(..., description="Nova ideia de produto...")
+
+
 # Dependency Injection Helpers
 def get_campaign_repository(db: Session = Depends(get_db)) -> SQLAlchemyCampaignRepository:
     return SQLAlchemyCampaignRepository(db)
@@ -166,3 +170,49 @@ async def get_campaign(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Campaign not found",
         )
+
+
+@app.post(
+    "/api/platform/campaign/{campaign_id}/regenerate",
+    status_code=status.HTTP_200_OK,
+    tags=["Campaigns"],
+    summary="Regenerate a campaign with a new description/product idea",
+)
+async def regenerate_campaign(
+    campaign_id: str,
+    payload: CampaignRegenerateRequest,
+    background_tasks: BackgroundTasks,
+    repo: SQLAlchemyCampaignRepository = Depends(get_campaign_repository),
+    gateway: HttpAIServiceGateway = Depends(get_ai_gateway),
+):
+    """
+    Updates the campaign's description/product idea, sets its status to 'generating',
+    and triggers the AI generation background task.
+    """
+    campaign = repo.get_by_id(campaign_id)
+    if not campaign:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Campaign not found",
+        )
+    
+    cleaned_desc = payload.description.strip()
+    if not cleaned_desc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Description cannot be empty",
+        )
+    
+    campaign.description = cleaned_desc
+    campaign.status = "generating"
+    repo.save(campaign)
+    
+    # Trigger background task
+    background_tasks.add_task(
+        gateway.trigger_analysis,
+        str(campaign.id),
+        campaign.handle,
+        cleaned_desc,
+    )
+    
+    return {"status": "success", "campaign_id": str(campaign.id)}

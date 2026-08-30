@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   CheckCircle2,
   Download,
@@ -13,12 +13,27 @@ import {
   FileText,
   Smartphone,
   ArrowRight,
+  Loader2,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
-import { CHECKOUT_BASE_URL, getBlueprintPdfUrl } from "@/lib/api";
+import {
+  CHECKOUT_BASE_URL,
+  getBlueprintPdfUrl,
+  fetchCampaignStatus,
+  regenerateCampaign,
+  CampaignStatusResponse,
+} from "@/lib/api";
 
 export default function SuccessPage() {
   const params = useParams();
+  const router = useRouter();
   const campaignId = (params?.campaign_id as string) || "drop-demo-123";
+
+  const [campaign, setCampaign] = useState<CampaignStatusResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+  const [customIdea, setCustomIdea] = useState<string>("");
 
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [copiedStory, setCopiedStory] = useState<number | null>(null);
@@ -26,6 +41,22 @@ export default function SuccessPage() {
 
   const salesLink = `${CHECKOUT_BASE_URL}/d/${campaignId}`;
   const pdfDownloadUrl = getBlueprintPdfUrl(campaignId);
+
+  useEffect(() => {
+    async function loadCampaign() {
+      try {
+        const data = await fetchCampaignStatus(campaignId);
+        if (data) {
+          setCampaign(data);
+        }
+      } catch (err) {
+        console.error("Error loading campaign details:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadCampaign();
+  }, [campaignId]);
 
   const copyToClipboard = async (text: string, type: "link" | "story", storyIndex?: number) => {
     try {
@@ -68,6 +99,19 @@ export default function SuccessPage() {
     }
   };
 
+  const handleRegenerate = async (description: string) => {
+    if (!description.trim()) return;
+    setIsRegenerating(true);
+    try {
+      await regenerateCampaign(campaignId, description);
+      router.push(`/processing?id=${encodeURIComponent(campaignId)}`);
+    } catch (err) {
+      console.error("Error regenerating campaign:", err);
+      alert("Houve um erro ao solicitar a regeneração. Por favor, tente novamente.");
+      setIsRegenerating(false);
+    }
+  };
+
   const storyTemplates = [
     {
       title: "Story 1 — Aquecimento",
@@ -78,6 +122,54 @@ export default function SuccessPage() {
       text: `ESTÁ LIBERADO! 🚀 Acessem o link e garantam o seu antes que esgote o lote: ${salesLink}`,
     },
   ];
+
+  if (isLoading) {
+    return (
+      <main
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#F5F4EF" }}
+      >
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FF4D00" }} />
+          <p
+            className="text-sm font-semibold uppercase tracking-widest"
+            style={{ fontFamily: "var(--font-dm)", color: "#555" }}
+          >
+            Carregando detalhes do seu Drop...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!campaign) {
+    return (
+      <main
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#F5F4EF" }}
+      >
+        <div className="flex flex-col items-center gap-3 max-w-md text-center px-4">
+          <p
+            className="text-sm font-semibold uppercase tracking-wider text-red-500"
+            style={{ fontFamily: "var(--font-dm)" }}
+          >
+            Campanha não encontrada
+          </p>
+          <p className="text-xs text-gray-500">
+            Não foi possível carregar os detalhes do drop para a campanha {campaignId}.
+          </p>
+          <Link
+            href="/"
+            className="mt-4 px-6 py-3 rounded-xl bg-[#0E0E0E] text-white text-xs uppercase tracking-wider font-bold"
+          >
+            Voltar ao Início
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  const alternativeProducts = campaign.copy_data?.alternative_products || [];
 
   return (
     <main
@@ -109,7 +201,6 @@ export default function SuccessPage() {
 
       {/* Main */}
       <section className="flex-1 w-full max-w-3xl mx-auto px-6 sm:px-12 py-16 flex flex-col justify-center gap-10">
-
         {/* Hero celebration */}
         <div className="space-y-3">
           <div
@@ -131,6 +222,24 @@ export default function SuccessPage() {
           >
             Baixe o Blueprint estratégico e compartilhe seu link de vendas com sua audiência agora.
           </p>
+
+          <div
+            className="mt-4 pt-1 flex flex-wrap gap-2 items-center"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
+            <span
+              className="px-3.5 py-1.5 rounded-lg text-white text-xs font-bold uppercase tracking-wider"
+              style={{ backgroundColor: "#FF4D00" }}
+            >
+              {campaign.copy_data?.title || "Drop Exclusivo"}
+            </span>
+            <span
+              className="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border font-mono"
+              style={{ borderColor: "#0E0E0E30", backgroundColor: "#ECEAE3" }}
+            >
+              R$ {campaign.price != null ? campaign.price.toFixed(2) : "97.00"}
+            </span>
+          </div>
         </div>
 
         {/* Link de vendas — card escuro */}
@@ -301,11 +410,135 @@ export default function SuccessPage() {
           </div>
         </div>
 
+        {/* Quer mudar seu Drop? */}
+        <div className="space-y-6 pt-8 border-t" style={{ borderColor: "#0E0E0E20" }}>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" style={{ color: "#FF4D00" }} />
+              <h3
+                className="font-bold text-lg"
+                style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+              >
+                Quer mudar seu Drop?
+              </h3>
+            </div>
+            <p
+              className="text-xs leading-relaxed"
+              style={{ fontFamily: "var(--font-dm)", color: "#666" }}
+            >
+              Não curtiu o produto sugerido? Escolha uma das 3 alternativas geradas pela IA abaixo para regenerar seu Drop instantaneamente, ou envie sua própria ideia.
+            </p>
+          </div>
+
+          {alternativeProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {alternativeProducts.map((prod, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  disabled={isRegenerating}
+                  onClick={() => handleRegenerate(prod.description)}
+                  className="p-5 rounded-2xl text-left border border-transparent hover:border-[#FF4D00] flex flex-col justify-between h-full group disabled:opacity-50 transition-all duration-200"
+                  style={{ backgroundColor: "#ECEAE3" }}
+                  title={`Selecionar ${prod.title}`}
+                >
+                  <div className="space-y-2">
+                    <span
+                      className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded"
+                      style={{ backgroundColor: "#dddbd4", color: "#555", fontFamily: "var(--font-dm)" }}
+                    >
+                      {prod.product_type === "physical" ? "Físico" : "Digital"}
+                    </span>
+                    <h4
+                      className="font-bold text-xs sm:text-sm leading-tight group-hover:text-[#FF4D00] transition-colors"
+                      style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
+                    >
+                      {prod.title}
+                    </h4>
+                    <p
+                      className="text-[10px] sm:text-xs leading-normal"
+                      style={{ fontFamily: "var(--font-dm)", color: "#555" }}
+                    >
+                      {prod.description}
+                    </p>
+                  </div>
+                  <div
+                    className="mt-4 pt-3 border-t font-mono font-bold text-xs w-full flex items-center justify-between"
+                    style={{ borderColor: "#0E0E0E10", color: "#0E0E0E" }}
+                  >
+                    <span>Preço</span>
+                    <span>R$ {prod.price.toFixed(2)}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p
+              className="text-xs italic"
+              style={{ fontFamily: "var(--font-dm)", color: "#999" }}
+            >
+              Nenhum produto alternativo disponível para esta campanha.
+            </p>
+          )}
+
+          {/* Custom Idea Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleRegenerate(customIdea);
+            }}
+            className="space-y-3"
+          >
+            <label
+              htmlFor="custom-idea-input"
+              className="block text-[10px] uppercase tracking-wider font-bold"
+              style={{ color: "#555", fontFamily: "var(--font-syne)" }}
+            >
+              Ou descreva sua própria ideia customizada:
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                id="custom-idea-input"
+                type="text"
+                value={customIdea}
+                onChange={(e) => setCustomIdea(e.target.value)}
+                disabled={isRegenerating}
+                placeholder="Ex: Quero um e-book de 30 páginas com receitas lowcarb de R$ 29..."
+                className="flex-1 px-4 py-3.5 rounded-xl text-sm transition-all focus:outline-none focus:ring-1 focus:ring-[#FF4D00]"
+                style={{
+                  backgroundColor: "#ECEAE3",
+                  color: "#0E0E0E",
+                  border: "1px solid #0E0E0E25",
+                  fontFamily: "var(--font-dm)",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={isRegenerating || !customIdea.trim()}
+                className="px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 shrink-0"
+                style={{ backgroundColor: "#0E0E0E", color: "#fff", fontFamily: "var(--font-syne)" }}
+              >
+                {isRegenerating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#FF4D00]" />
+                    <span>Regenerando...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 text-[#FF4D00]" />
+                    <span>Regenerar Drop</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
         {/* Voltar */}
         <div className="pt-2 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold transition-colors hover:text-[#FF4D00]"
             style={{ fontFamily: "var(--font-dm)", color: "#999" }}
           >
             <span>Criar outro Drop</span>

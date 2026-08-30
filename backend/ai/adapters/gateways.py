@@ -1,3 +1,4 @@
+import html
 import json
 import logging
 import os
@@ -9,6 +10,45 @@ from domain.interfaces import ILLMService, IPdfGenerator
 from pdf_generator import generate_blueprint_pdf
 
 logger = logging.getLogger("ai.adapters.gateways")
+
+
+def search_creator_info(handle: str) -> str:
+    """Busca informações públicas sobre o criador usando DuckDuckGo HTML."""
+    query = f"{handle} instagram niche content"
+    url = "https://html.duckduckgo.com/html/"
+    try:
+        clean_handle = handle.replace("@", "").strip()
+        search_query = f"{clean_handle} instagram niche content"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+            response = client.get(url, params={"q": search_query}, headers=headers)
+            if response.status_code != 200:
+                logger.warning(f"DuckDuckGo search failed with status {response.status_code}")
+                return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
+            
+            html_content = response.text
+            snippets = re.findall(r'<a class="result__snippet"[^>]*>(.*?)</a>', html_content, re.DOTALL)
+            if not snippets:
+                logger.warning("No snippets found in DuckDuckGo search results.")
+                return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
+            
+            cleaned_snippets = []
+            for snippet in snippets[:4]:  # 3 a 4 primeiros resultados
+                # Limpa tags HTML
+                clean_text = re.sub(r'<[^>]+>', '', snippet)
+                clean_text = html.unescape(clean_text).strip()
+                if clean_text:
+                    cleaned_snippets.append(clean_text)
+            
+            if not cleaned_snippets:
+                return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
+            
+            return " | ".join(cleaned_snippets)
+    except Exception as e:
+        logger.warning(f"Error during DuckDuckGo search: {e}")
+        return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
 
 
 class OpenRouterLLMService(ILLMService):
@@ -47,6 +87,26 @@ class OpenRouterLLMService(ILLMService):
                     "Sessão de mentoria ao vivo para tirar dúvidas",
                     "Garantia incondicional de satisfação",
                 ],
+                "alternative_products": [
+                    {
+                        "title": f"Ebook VIP: Dominando {topic}",
+                        "description": f"Guia prático em formato digital com estratégias de {topic} por {handle}.",
+                        "product_type": "digital",
+                        "price": 47.00,
+                    },
+                    {
+                        "title": f"Comunidade {handle} Hub",
+                        "description": f"Acesso à nossa comunidade fechada com discussões diárias sobre {topic}.",
+                        "product_type": "digital",
+                        "price": 197.00,
+                    },
+                    {
+                        "title": f"Mentoria Express: {topic}",
+                        "description": f"Sessão individual gravada de 45 minutos para acelerar seus resultados em {topic}.",
+                        "product_type": "digital",
+                        "price": 497.00,
+                    }
+                ],
             },
             "scarcity_limit": 50,
             "blueprint_content": (
@@ -72,9 +132,13 @@ class OpenRouterLLMService(ILLMService):
             logger.info("OPENROUTER_API_KEY not configured. Using high-fidelity fallback.")
             return self._get_fallback_analysis(handle, description)
 
+        # Call search_creator_info helper to fetch public context
+        search_info = search_creator_info(handle)
+
         prompt_content = (
             f"Você é o especialista de produto e copywriting da ByteMedia. "
             f"Gere a estrutura completa de um Drop irresistível para o criador '{handle}'.\n"
+            f"Informações contextuais encontradas sobre o criador na web: '{search_info}'\n"
             f"Ideia/Descrição do produto fornecida pelo criador: '{description or 'Produtos digitais e comunidade'}'\n\n"
             "Retorne OBRIGATORIAMENTE apenas um JSON válido no seguinte formato exato (sem texto antes ou depois):\n"
             "{\n"
@@ -89,7 +153,27 @@ class OpenRouterLLMService(ILLMService):
             '    "title": "Nome Persuasivo do Produto",\n'
             '    "subtitle": "Subtítulo de alto impacto explicando a transformação",\n'
             '    "hooks": ["Gancho 1", "Gancho 2", "Gancho 3"],\n'
-            '    "benefits": ["Benefício 1", "Benefício 2", "Benefício 3", "Benefício 4"]\n'
+            '    "benefits": ["Benefício 1", "Benefício 2", "Benefício 3", "Benefício 4"],\n'
+            '    "alternative_products": [\n'
+            '      {\n'
+            '        "title": "Título do Produto Alternativo 1",\n'
+            '        "description": "Descrição detalhada do produto alternativo 1",\n'
+            '        "product_type": "digital",\n'
+            '        "price": 47.00\n'
+            '      },\n'
+            '      {\n'
+            '        "title": "Título do Produto Alternativo 2",\n'
+            '        "description": "Descrição detalhada do produto alternativo 2",\n'
+            '        "product_type": "digital",\n'
+            '        "price": 197.00\n'
+            '      },\n'
+            '      {\n'
+            '        "title": "Título do Produto Alternativo 3",\n'
+            '        "description": "Descrição detalhada do produto alternativo 3",\n'
+            '        "product_type": "digital",\n'
+            '        "price": 297.00\n'
+            '      }\n'
+            '    ]\n'
             "  },\n"
             '  "scarcity_limit": 50,\n'
             '  "blueprint_content": "Estratégia de marketing e plano de lançamento detalhados para o drop (focado em aquecimento, cronograma geral e projeções)..."\n'
@@ -146,8 +230,8 @@ class OpenRouterLLMService(ILLMService):
                                                 },
                                                 "required": ["primary", "background", "foto_url"],
                                                 "additionalProperties": False,
-                                            },
-                                            "copy_data": {
+                                              },
+                                              "copy_data": {
                                                 "type": "object",
                                                 "properties": {
                                                     "title": {"type": "string"},
@@ -160,12 +244,35 @@ class OpenRouterLLMService(ILLMService):
                                                         "type": "array",
                                                         "items": {"type": "string"},
                                                     },
+                                                    "alternative_products": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "title": {"type": "string"},
+                                                                "description": {"type": "string"},
+                                                                "product_type": {
+                                                                    "type": "string",
+                                                                    "enum": ["physical", "digital"],
+                                                                },
+                                                                "price": {"type": "number"},
+                                                            },
+                                                            "required": [
+                                                                "title",
+                                                                "description",
+                                                                "product_type",
+                                                                "price",
+                                                            ],
+                                                            "additionalProperties": False,
+                                                        },
+                                                    },
                                                 },
                                                 "required": [
                                                     "title",
                                                     "subtitle",
                                                     "hooks",
                                                     "benefits",
+                                                    "alternative_products",
                                                 ],
                                                 "additionalProperties": False,
                                             },
