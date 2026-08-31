@@ -50,3 +50,11 @@ Para limpar volumes (apagar o banco de dados local):
 ```bash
 docker-compose down -v
 ```
+
+---
+
+## 🔮 Roadmap de Infraestrutura Futura
+
+Em etapas futuras de escala, a infraestrutura será migrada para a stack serverless de ultra-baixa latência:
+- **Supabase**: PostgreSQL gerenciado, Supabase Storage (CDN global) para upload de arquivos dos criadores e Webhooks para conciliação instantânea de Pix.
+- **Cloudflare Pages & Workers**: Deploicamento Edge de alta performance para os frontends Next.js (`platform` e `checkout`).
