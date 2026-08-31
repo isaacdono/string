@@ -7,7 +7,7 @@ export default function WhoWeAre() {
       className="w-full border-t py-20 sm:py-28 bg-[#F5F4EF]"
       style={{ borderColor: "#0E0E0E20" }}
     >
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 items-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 items-center">
         {/* Left column: Text content */}
         <div className="space-y-6">
           <div className="space-y-4">
@@ -18,7 +18,7 @@ export default function WhoWeAre() {
               Holding de Infraestrutura Executiva
             </p>
             <h2
-              className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-none"
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-none"
               style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
             >
               Quem somos
@@ -43,7 +43,7 @@ export default function WhoWeAre() {
 
         {/* Right column: Concept graphics / visual highlight card */}
         <div
-          className="p-8 sm:p-10 rounded-3xl border flex flex-col justify-between h-80 sm:h-96 text-white"
+          className="p-5 sm:p-8 md:p-10 rounded-3xl border flex flex-col justify-between min-h-[320px] h-auto sm:h-96 text-white"
           style={{
             backgroundColor: "#0E0E0E",
             borderColor: "#0E0E0E",

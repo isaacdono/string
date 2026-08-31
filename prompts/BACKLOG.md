@@ -166,7 +166,6 @@ Cenário: Geração do PDF Blueprint sem bloquear o pipeline principal
     - Cabeçalho personalizado com o @handle e paleta de cores
     - Resumo Executivo da Oferta (Nome do Produto, Ticket Médio, Modelo de Negócio)
     - Persona & Dores do Público-Alvo
-    - Roteiro de Stories (Copy de Aquecimento, Lançamento e Fechamento)
     - Projeção de Receita baseada no limite de escassez
   E salvar o arquivo estático e disponibilizar a URL segura de download.
 

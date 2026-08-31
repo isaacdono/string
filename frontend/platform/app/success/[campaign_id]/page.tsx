@@ -178,7 +178,7 @@ export default function SuccessPage() {
     >
       {/* Header */}
       <header
-        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
+        className="w-full px-4 sm:px-8 md:px-12 py-5 flex items-center justify-between border-b"
         style={{ borderColor: "#0E0E0E30" }}
       >
         <Link href="/" className="group">
@@ -200,7 +200,7 @@ export default function SuccessPage() {
       </header>
 
       {/* Main */}
-      <section className="flex-1 w-full max-w-3xl mx-auto px-6 sm:px-12 py-16 flex flex-col justify-center gap-10">
+      <section className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-8 md:px-12 py-12 sm:py-16 flex flex-col justify-center gap-10">
         {/* Hero celebration */}
         <div className="space-y-3">
           <div
@@ -210,7 +210,7 @@ export default function SuccessPage() {
             <CheckCircle2 className="w-7 h-7 text-white" />
           </div>
           <h1
-            className="text-4xl sm:text-5xl font-extrabold leading-[1.05]"
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-[1.05]"
             style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
           >
             Seu Drop<br />está{" "}
@@ -220,7 +220,7 @@ export default function SuccessPage() {
             className="text-sm leading-relaxed max-w-md"
             style={{ fontFamily: "var(--font-dm)", color: "#666" }}
           >
-            Baixe o Blueprint estratégico e compartilhe seu link de vendas com sua audiência agora.
+            Baixe seu Dossiê e compartilhe seu link de vendas com sua audiência agora.
           </p>
 
           <div
@@ -237,7 +237,7 @@ export default function SuccessPage() {
               className="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border font-mono"
               style={{ borderColor: "#0E0E0E30", backgroundColor: "#ECEAE3" }}
             >
-              R$ {campaign.price != null ? campaign.price.toFixed(2) : "97.00"}
+              R$ {campaign.price != null ? campaign.price.toFixed(2) : "0.00"}
             </span>
           </div>
         </div>
@@ -264,18 +264,18 @@ export default function SuccessPage() {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div
-              className="flex-1 px-4 py-3.5 rounded-xl font-mono text-xs sm:text-sm truncate select-all flex items-center gap-2"
+              className="flex-1 px-4 py-3.5 rounded-xl font-mono text-xs sm:text-sm truncate select-all flex items-center gap-2 min-w-0"
               style={{ backgroundColor: "#1a1a1a", color: "#aaa", border: "1px solid #333" }}
             >
-              <span className="select-none">🔗</span>
+              <span className="select-none flex-shrink-0">🔗</span>
               <span className="truncate">{salesLink}</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => copyToClipboard(salesLink, "link")}
-                className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[120px]"
                 style={
                   copiedLink
                     ? { backgroundColor: "#222", color: "#FF4D00", border: "1px solid #333", fontFamily: "var(--font-syne)" }
@@ -283,9 +283,9 @@ export default function SuccessPage() {
                 }
               >
                 {copiedLink ? (
-                  <><Check className="w-4 h-4" /><span className="uppercase text-xs tracking-widest">Copiado!</span></>
+                  <><Check className="w-4 h-4 flex-shrink-0" /><span className="uppercase text-[11px] sm:text-xs tracking-wider sm:tracking-widest truncate">Copiado!</span></>
                 ) : (
-                  <><Copy className="w-4 h-4" /><span className="uppercase text-xs tracking-widest">Copiar Link</span></>
+                  <><Copy className="w-4 h-4 flex-shrink-0" /><span className="uppercase text-[11px] sm:text-xs tracking-wider sm:tracking-widest truncate">Copiar Link</span></>
                 )}
               </button>
 
@@ -293,7 +293,7 @@ export default function SuccessPage() {
                 href={salesLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-3.5 rounded-xl flex items-center justify-center transition-colors"
+                className="px-3.5 py-3.5 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
                 style={{ backgroundColor: "#222", color: "#888", border: "1px solid #333" }}
                 title="Abrir em nova aba"
               >
@@ -303,7 +303,7 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        {/* Blueprint PDF — card claro */}
+        {/* Dossiê PDF — card claro */}
         <div
           className="rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
           style={{ backgroundColor: "#ECEAE3" }}
@@ -321,20 +321,20 @@ export default function SuccessPage() {
                   className="font-bold text-base"
                   style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
                 >
-                  Blueprint Estratégico (PDF)
+                  Dossiê de Lançamento (PDF)
                 </h3>
                 <span
                   className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded"
                   style={{ backgroundColor: "#dddbd4", color: "#777" }}
                 >
-                  Relatório Executivo
+                  Estratégia Executiva
                 </span>
               </div>
               <p
                 className="text-xs max-w-md leading-relaxed"
                 style={{ fontFamily: "var(--font-dm)", color: "#666" }}
               >
-                Persona, precificação, copy de alta conversão e projeção de receita.
+                Plano de 7 dias, hooks de conversão, copy validado e projeção de receita.
               </p>
             </div>
           </div>
@@ -343,71 +343,16 @@ export default function SuccessPage() {
             href={pdfDownloadUrl}
             target="_blank"
             rel="noopener noreferrer"
-            download={`blueprint-${campaignId}.pdf`}
+            download={`dossie-${campaignId}.pdf`}
             onClick={handleDownloadPDF}
             className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 flex-shrink-0"
             style={{ backgroundColor: "#0E0E0E", color: "#fff", fontFamily: "var(--font-syne)" }}
           >
             <Download className="w-4 h-4" style={{ color: "#FF4D00" }} />
             <span className="uppercase text-xs tracking-widest">
-              {isDownloading ? "Baixando..." : "Baixar PDF"}
+              {isDownloading ? "Baixando..." : "Baixar Dossiê"}
             </span>
           </a>
-        </div>
-
-        {/* Story Templates */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Share2 className="w-4 h-4" style={{ color: "#FF4D00" }} />
-            <span
-              className="font-bold text-sm"
-              style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
-            >
-              Roteiro de Divulgação para Stories
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {storyTemplates.map((template, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl space-y-4 flex flex-col justify-between"
-                style={{ backgroundColor: "#ECEAE3" }}
-              >
-                <div>
-                  <h4
-                    className="text-[10px] font-bold uppercase tracking-widest"
-                    style={{ color: "#FF4D00", fontFamily: "var(--font-dm)" }}
-                  >
-                    {template.title}
-                  </h4>
-                  <p
-                    className="text-xs mt-2 leading-relaxed italic"
-                    style={{ fontFamily: "var(--font-dm)", color: "#555" }}
-                  >
-                    &quot;{template.text}&quot;
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(template.text, "story", idx)}
-                  className="w-full py-2.5 px-3 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-                  style={
-                    copiedStory === idx
-                      ? { backgroundColor: "#FF4D0015", color: "#FF4D00", fontFamily: "var(--font-dm)" }
-                      : { backgroundColor: "#dddbd4", color: "#555", fontFamily: "var(--font-dm)" }
-                  }
-                >
-                  {copiedStory === idx ? (
-                    <><Check className="w-3.5 h-3.5" /><span>Copiado!</span></>
-                  ) : (
-                    <><Copy className="w-3.5 h-3.5" /><span>Copiar Texto</span></>
-                  )}
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Quer mudar seu Drop? */}
@@ -438,7 +383,7 @@ export default function SuccessPage() {
                   type="button"
                   disabled={isRegenerating}
                   onClick={() => handleRegenerate(prod.description)}
-                  className="p-5 rounded-2xl text-left border border-transparent hover:border-[#FF4D00] flex flex-col justify-between h-full group disabled:opacity-50 transition-all duration-200"
+                  className="p-4 sm:p-5 rounded-2xl text-left border border-transparent hover:border-[#FF4D00] flex flex-col justify-between h-full group disabled:opacity-50 transition-all duration-200"
                   style={{ backgroundColor: "#ECEAE3" }}
                   title={`Selecionar ${prod.title}`}
                 >
@@ -549,7 +494,7 @@ export default function SuccessPage() {
 
       {/* Footer */}
       <footer
-        className="w-full px-6 sm:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs"
+        className="w-full px-4 sm:px-8 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs"
         style={{ backgroundColor: "#0E0E0E", fontFamily: "var(--font-dm)", color: "#555" }}
       >
         <span>ByteMedia · Drop Engine v1.0</span>

@@ -13,41 +13,49 @@ logger = logging.getLogger("ai.adapters.gateways")
 
 
 def search_creator_info(handle: str) -> str:
-    """Busca informações públicas sobre o criador usando DuckDuckGo HTML."""
-    query = f"{handle} instagram niche content"
-    url = "https://html.duckduckgo.com/html/"
+    """Busca informações públicas sobre o criador usando DuckDuckGo Lite (POST)."""
+    clean_handle = handle.replace("@", "").strip()
+    search_query = f"{clean_handle} instagram niche content"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    
     try:
-        clean_handle = handle.replace("@", "").strip()
-        search_query = f"{clean_handle} instagram niche content"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
         with httpx.Client(timeout=10.0, follow_redirects=True) as client:
-            response = client.get(url, params={"q": search_query}, headers=headers)
-            if response.status_code != 200:
-                logger.warning(f"DuckDuckGo search failed with status {response.status_code}")
-                return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
+            logger.info(f"Iniciando requisição ao DuckDuckGo Lite para o handle {handle} com query: {search_query}")
+            # Use DuckDuckGo Lite POST to prevent bot detection / anomaly challenge
+            response = client.post(
+                "https://lite.duckduckgo.com/lite/",
+                data={"q": search_query},
+                headers=headers,
+            )
             
             html_content = response.text
-            snippets = re.findall(r'<a class="result__snippet"[^>]*>(.*?)</a>', html_content, re.DOTALL)
+            snippets = re.findall(r"<td class=['\"]result-snippet['\"][^>]*>(.*?)</td>", html_content, re.DOTALL | re.IGNORECASE)
+            
+            # Fallback regex if HTML structure varies
             if not snippets:
-                logger.warning("No snippets found in DuckDuckGo search results.")
+                snippets = re.findall(r'<a class="result__snippet"[^>]*>(.*?)</a>', html_content, re.DOTALL)
+            
+            if not snippets:
+                logger.warning(f"Nenhum snippet encontrado nos resultados do DuckDuckGo para {handle}.")
                 return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
             
             cleaned_snippets = []
-            for snippet in snippets[:4]:  # 3 a 4 primeiros resultados
-                # Limpa tags HTML
+            for snippet in snippets[:4]:
                 clean_text = re.sub(r'<[^>]+>', '', snippet)
                 clean_text = html.unescape(clean_text).strip()
                 if clean_text:
                     cleaned_snippets.append(clean_text)
             
+            logger.info(f"DuckDuckGo retornou {len(cleaned_snippets)} snippets reais para {handle}.")
             if not cleaned_snippets:
                 return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
             
             return " | ".join(cleaned_snippets)
     except Exception as e:
-        logger.warning(f"Error during DuckDuckGo search: {e}")
+        logger.warning(f"Erro na busca DuckDuckGo: {e}")
         return f"Criador de conteúdo do nicho de Instagram com handle {handle}."
 
 
@@ -55,130 +63,61 @@ class OpenRouterLLMService(ILLMService):
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
 
-    def _get_fallback_analysis(
-        self, handle: str, description: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """Generates structured fallback drop content tailored to creator handle and description."""
-        topic = (
-            description.strip()
-            if description and description.strip()
-            else f"Conteúdo Exclusivo de {handle}"
-        )
-
-        return {
-            "product_type": "digital",
-            "price": 97.00,
-            "theme_config": {
-                "primary": "#6366F1",
-                "background": "#0F172A",
-                "foto_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-            },
-            "copy_data": {
-                "title": f"Drop Exclusivo: {topic}",
-                "subtitle": f"O método definitivo acelerado por IA desenvolvido por {handle}.",
-                "hooks": [
-                    f"Acesso imediato e vitalício ao drop de {handle}",
-                    "Vagas estritamente limitadas para a primeira turma",
-                    "Método testado e validado em campo",
-                ],
-                "benefits": [
-                    "Acesso completo ao conteúdo e templates prontos",
-                    "Comunidade exclusiva de networking",
-                    "Sessão de mentoria ao vivo para tirar dúvidas",
-                    "Garantia incondicional de satisfação",
-                ],
-                "alternative_products": [
-                    {
-                        "title": f"Ebook VIP: Dominando {topic}",
-                        "description": f"Guia prático em formato digital com estratégias de {topic} por {handle}.",
-                        "product_type": "digital",
-                        "price": 47.00,
-                    },
-                    {
-                        "title": f"Comunidade {handle} Hub",
-                        "description": f"Acesso à nossa comunidade fechada com discussões diárias sobre {topic}.",
-                        "product_type": "digital",
-                        "price": 197.00,
-                    },
-                    {
-                        "title": f"Mentoria Express: {topic}",
-                        "description": f"Sessão individual gravada de 45 minutos para acelerar seus resultados em {topic}.",
-                        "product_type": "digital",
-                        "price": 497.00,
-                    }
-                ],
-            },
-            "scarcity_limit": 50,
-            "blueprint_content": (
-                f"ESTRATÉGIA DE MARKETING E PLANO DE LANÇAMENTO — DROP {handle}\n\n"
-                f"1. AQUECIMENTO E ANTECIPAÇÃO:\n"
-                f"- Compartilhar os bastidores do desenvolvimento do produto e identificar as dores da audiência.\n"
-                f"- Criar caixas de perguntas sobre '{topic}' para gerar conexão e interesse.\n"
-                f"- Anunciar que um lote especial limitado de lançamento será liberado em breve.\n\n"
-                f"2. CRONOGRAMA DE LANÇAMENTO:\n"
-                f"- D-Day: Liberação oficial do link de checkout com condições especiais de abertura.\n"
-                f"- Compartilhar provas sociais em tempo real e destacar a escassez das vagas.\n"
-                f"- Realizar alertas de encerramento do lote para acelerar a tomada de decisão.\n\n"
-                f"3. PROJEÇÃO DE RESULTADOS:\n"
-                f"- Meta ideal de 50 vagas preenchidas a R$ 97,00, gerando um faturamento estimado de R$ 4.850,00."
-            ),
-        }
-
     async def generate_analysis(
         self, handle: str, description: Optional[str]
     ) -> Dict[str, Any]:
-        """Queries OpenRouter LLM for structured campaign details with fallback."""
+        """Queries OpenRouter LLM for structured campaign details."""
+        logger.info(f"Análise de campanha solicitada para o handle: {handle}")
         if not self.api_key or self.api_key.strip() in ("", "chave_do_nemotron", "none"):
-            logger.info("OPENROUTER_API_KEY not configured. Using high-fidelity fallback.")
-            return self._get_fallback_analysis(handle, description)
+            raise ValueError("OPENROUTER_API_KEY não configurada no ambiente.")
 
         # Call search_creator_info helper to fetch public context
         search_info = search_creator_info(handle)
+        logger.info(f"Resultado final do contexto da busca DuckDuckGo: {search_info}")
 
         prompt_content = (
-            f"Você é o especialista de produto e copywriting da ByteMedia. "
-            f"Gere a estrutura completa de um Drop irresistível para o criador '{handle}'.\n"
-            f"Informações contextuais encontradas sobre o criador na web: '{search_info}'\n"
-            f"Ideia/Descrição do produto fornecida pelo criador: '{description or 'Produtos digitais e comunidade'}'\n\n"
+            f"Você é o especialista de produto e copywriting da ByteMedia, uma plataforma brasileira B2B para criadores de conteúdo.\n"
+            f"Sua tarefa é criar a estrutura de um infoproduto ou produto digital que o PRÓPRIO CRIADOR '{handle}' irá VENDER para a SUA audiência.\n\n"
+            f"CONTEXTO PÚBLICO DO CRIADOR (obtido via busca na web): '{search_info}'\n"
+            f"IDEIA DO PRODUTO fornecida pelo criador: '{description or 'Produto digital baseado no nicho e expertise do criador'}'\n\n"
+            f"REGRAS CRÍTICAS — LEIA COM ATENÇÃO:\n"
+            f"1. O produto é algo que o CRIADOR CRIA E VENDE com base na sua própria expertise e nicho. NÃO é acesso a outra pessoa famosa.\n"
+            f"2. Se o handle for de uma pessoa famosa (ex: @arianagrande, @neymar), assuma que é UM FÃ ou CRIADOR DE CONTEÚDO inspirado nesse nicho, não a celebridade em si.\n"
+            f"3. O produto deve ser um infoproduto concreto: e-book, curso, mentoria, planilha, template, comunidade, newsletter paga, etc.\n"
+            f"4. O título do produto deve ser ORIGINAL e ESPECÍFICO ao nicho, não genérico.\n"
+            f"5. O preço deve ser estratégico entre R$ 27 e R$ 997 — nunca use R$ 97,00 como padrão.\n"
+            f"6. Os hooks e benefícios devem falar diretamente com a dor/desejo da audiência do criador.\n"
+            f"7. O blueprint_content deve conter um plano de lançamento REAL e DETALHADO de 7 dias, com ações concretas de stories, reels e DM.\n\n"
             "Retorne OBRIGATORIAMENTE apenas um JSON válido no seguinte formato exato (sem texto antes ou depois):\n"
             "{\n"
             '  "product_type": "digital",\n'
-            '  "price": 97.00,\n'
+            '  "price": 147.00,\n'
             '  "theme_config": {\n'
             '    "primary": "#6366F1",\n'
-            '    "background": "#0F172A",\n'
-            '    "foto_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb"\n'
+            '    "background": "#0F172A"\n'
             "  },\n"
             '  "copy_data": {\n'
-            '    "title": "Nome Persuasivo do Produto",\n'
-            '    "subtitle": "Subtítulo de alto impacto explicando a transformação",\n'
-            '    "hooks": ["Gancho 1", "Gancho 2", "Gancho 3"],\n'
-            '    "benefits": ["Benefício 1", "Benefício 2", "Benefício 3", "Benefício 4"],\n'
+            '    "title": "Nome Específico e Persuasivo do Produto",\n'
+            '    "format": "E-book em PDF",\n'
+            '    "subtitle": "Subtítulo explicando a transformação concreta que o comprador terá",\n'
+            '    "hooks": ["Gancho específico 1", "Gancho específico 2", "Gancho específico 3"],\n'
+            '    "benefits": ["Benefício concreto 1", "Benefício concreto 2", "Benefício concreto 3", "Benefício concreto 4"],\n'
+            '    "social_proof_quotes": [\n'
+            '      {"user": "nome_usuario1", "comment": "Depoimento realista de 1 a 2 frases sobre o produto"},\n'
+            '      {"user": "nome_usuario2", "comment": "Depoimento realista de 1 a 2 frases sobre o produto"},\n'
+            '      {"user": "nome_usuario3", "comment": "Depoimento realista de 1 a 2 frases sobre o produto"}\n'
+            "    ],\n"
             '    "alternative_products": [\n'
-            '      {\n'
-            '        "title": "Título do Produto Alternativo 1",\n'
-            '        "description": "Descrição detalhada do produto alternativo 1",\n'
-            '        "product_type": "digital",\n'
-            '        "price": 47.00\n'
-            '      },\n'
-            '      {\n'
-            '        "title": "Título do Produto Alternativo 2",\n'
-            '        "description": "Descrição detalhada do produto alternativo 2",\n'
-            '        "product_type": "digital",\n'
-            '        "price": 197.00\n'
-            '      },\n'
-            '      {\n'
-            '        "title": "Título do Produto Alternativo 3",\n'
-            '        "description": "Descrição detalhada do produto alternativo 3",\n'
-            '        "product_type": "digital",\n'
-            '        "price": 297.00\n'
-            '      }\n'
-            '    ]\n'
+            '      {"title": "Produto alternativo 1 concreto", "description": "Descrição objetiva do que é e para quem serve", "product_type": "digital", "price": 47.00},\n'
+            '      {"title": "Produto alternativo 2 concreto", "description": "Descrição objetiva do que é e para quem serve", "product_type": "digital", "price": 197.00},\n'
+            '      {"title": "Produto alternativo 3 concreto", "description": "Descrição objetiva do que é e para quem serve", "product_type": "digital", "price": 297.00}\n'
+            "    ]\n"
             "  },\n"
             '  "scarcity_limit": 50,\n'
-            '  "blueprint_content": "Estratégia de marketing e plano de lançamento detalhados para o drop (focado em aquecimento, cronograma geral e projeções)..."\n'
+            '  "blueprint_content": "Plano de lançamento de 7 dias com ações concretas de stories, reels, DM e engajamento. Dia 1: ... Dia 2: ... Dia 3: ... Dia 4: ... Dia 5: ... Dia 6: ... Dia 7: Abertura do carrinho. Projeções realistas de receita."\n'
             "}"
         )
+
 
         models_to_try = [
             "openrouter/free",
@@ -188,6 +127,7 @@ class OpenRouterLLMService(ILLMService):
 
         for model_name in models_to_try:
             try:
+                logger.info(f"Iniciando chamada ao modelo {model_name} no OpenRouter...")
                 async with httpx.AsyncClient(timeout=25.0) as client:
                     response = await client.post(
                         "https://openrouter.ai/api/v1/chat/completions",
@@ -207,101 +147,39 @@ class OpenRouterLLMService(ILLMService):
                                 {"role": "user", "content": prompt_content},
                             ],
                             "temperature": 0.5,
-                            "reasoning": {"enabled": True},
                             "response_format": {
-                                "type": "json_schema",
-                                "json_schema": {
-                                    "name": "CampaignAnalysis",
-                                    "strict": True,
-                                    "schema": {
-                                        "type": "object",
-                                        "properties": {
-                                            "product_type": {
-                                                "type": "string",
-                                                "enum": ["physical", "digital"],
-                                            },
-                                            "price": {"type": "number"},
-                                            "theme_config": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "primary": {"type": "string"},
-                                                    "background": {"type": "string"},
-                                                    "foto_url": {"type": "string"},
-                                                },
-                                                "required": ["primary", "background", "foto_url"],
-                                                "additionalProperties": False,
-                                              },
-                                              "copy_data": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "title": {"type": "string"},
-                                                    "subtitle": {"type": "string"},
-                                                    "hooks": {
-                                                        "type": "array",
-                                                        "items": {"type": "string"},
-                                                    },
-                                                    "benefits": {
-                                                        "type": "array",
-                                                        "items": {"type": "string"},
-                                                    },
-                                                    "alternative_products": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "title": {"type": "string"},
-                                                                "description": {"type": "string"},
-                                                                "product_type": {
-                                                                    "type": "string",
-                                                                    "enum": ["physical", "digital"],
-                                                                },
-                                                                "price": {"type": "number"},
-                                                            },
-                                                            "required": [
-                                                                "title",
-                                                                "description",
-                                                                "product_type",
-                                                                "price",
-                                                            ],
-                                                            "additionalProperties": False,
-                                                        },
-                                                    },
-                                                },
-                                                "required": [
-                                                    "title",
-                                                    "subtitle",
-                                                    "hooks",
-                                                    "benefits",
-                                                    "alternative_products",
-                                                ],
-                                                "additionalProperties": False,
-                                            },
-                                            "scarcity_limit": {"type": "integer"},
-                                            "blueprint_content": {"type": "string"},
-                                        },
-                                        "required": [
-                                            "product_type",
-                                            "price",
-                                            "theme_config",
-                                            "copy_data",
-                                            "scarcity_limit",
-                                            "blueprint_content",
-                                        ],
-                                        "additionalProperties": False,
-                                    },
-                                },
+                                "type": "json_object"
                             },
                         },
                     )
 
                     if response.status_code == 200:
-                        resp_json = response.json()
-                        raw_text = resp_json["choices"][0]["message"]["content"].strip()
+                        try:
+                            resp_json = response.json()
+                        except (json.JSONDecodeError, ValueError) as e:
+                            logger.error(
+                                f"Falha ao decodificar JSON do OpenRouter. Status: {response.status_code}. Resposta crua: {response.text}"
+                            )
+                            raise e
+
+                        choice_message = resp_json["choices"][0]["message"]
+                        content = choice_message.get("content")
+                        if content is None:
+                            logger.error(f"OpenRouter retornou conteúdo nulo (None) na resposta. JSON Completo: {resp_json}")
+                            raise ValueError("OpenRouter retornou conteúdo de mensagem nulo.")
+                        raw_text = content.strip()
 
                         # Extract JSON from markdown code fences if wrapped
                         json_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw_text)
                         json_str = json_match.group(1) if json_match else raw_text
-                        parsed_data = json.loads(json_str)
+
+                        try:
+                            parsed_data = json.loads(json_str)
+                        except json.JSONDecodeError as e:
+                            logger.error(
+                                f"Falha ao decodificar JSON extraído do modelo {model_name}. Texto bruto do modelo: {raw_text}"
+                            )
+                            raise e
 
                         # Validate required fields
                         if "copy_data" in parsed_data and "theme_config" in parsed_data:
@@ -310,8 +188,8 @@ class OpenRouterLLMService(ILLMService):
             except Exception as e:
                 logger.warning(f"Error querying model {model_name}: {e}")
 
-        logger.warning("All LLM requests failed. Falling back to local synthesizer.")
-        return self._get_fallback_analysis(handle, description)
+        logger.error("All LLM requests failed. Fallback simulation disabled.")
+        raise RuntimeError("Todos os provedores de LLM falharam e nenhum fallback de simulação está disponível.")
 
 
 class ReportLabPdfGenerator(IPdfGenerator):

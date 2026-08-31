@@ -16,7 +16,7 @@ class HttpAIServiceGateway(IAIServiceGateway):
     ) -> None:
         """Sends POST request to backend-ai analysis route."""
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(timeout=120.0) as client:
                 response = await client.post(
                     f"{self.ai_url.rstrip('/')}/api/ai/analyze",
                     json={

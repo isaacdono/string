@@ -15,7 +15,7 @@ export default function HowItWorks() {
     {
       number: "03",
       title: "Venda no PIX",
-      description: "Receba seu Blueprint detalhado em PDF e comece a vender imediatamente com checkout via PIX de alta conversão.",
+      description: "Receba seu Dossiê de Lançamento em PDF e comece a vender imediatamente com checkout via PIX de alta conversão.",
     },
   ];
 
@@ -25,7 +25,7 @@ export default function HowItWorks() {
       className="w-full border-t py-20 sm:py-28 bg-[#F5F4EF]"
       style={{ borderColor: "#0E0E0E20" }}
     >
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 space-y-12 sm:space-y-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 md:px-12 space-y-12 sm:space-y-16">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div className="space-y-4">
             <p
@@ -35,7 +35,7 @@ export default function HowItWorks() {
               Simples, Rápido e Direto
             </p>
             <h2
-              className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-none"
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-none"
               style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
             >
               Como funciona
@@ -49,11 +49,11 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
           {steps.map((step, idx) => (
             <div
               key={idx}
-              className="space-y-4 p-6 sm:p-8 rounded-2xl border bg-white/40 backdrop-blur-sm transition-all duration-300 hover:border-[#FF4D00]/30 hover:bg-white/60"
+              className="space-y-4 p-5 sm:p-8 rounded-2xl border bg-white/40 backdrop-blur-sm transition-all duration-300 hover:border-[#FF4D00]/30 hover:bg-white/60"
               style={{ borderColor: "#0E0E0E15" }}
             >
               <div

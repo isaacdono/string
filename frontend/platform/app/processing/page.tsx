@@ -26,46 +26,46 @@ interface StepConfig {
 const STEPS: StepConfig[] = [
   {
     id: 1,
-    title: "Profile Scraping & Analysis",
-    subtitle: "Mapeando engajamento, persona e dores do público-alvo",
+    title: "Análise Estratégica",
+    subtitle: "Mapeando o perfil e oportunidades",
     icon: Search,
     logs: [
-      "Conectando aos dados públicos do perfil...",
-      "Extraindo métricas de engajamento e comentários...",
-      "Identificando padrões de interesse da audiência...",
+      "Analisando presença digital e referências...",
+      "Identificando perfil e comportamento da audiência...",
+      "Mapeando dores e desejos do público...",
     ],
   },
   {
     id: 2,
-    title: "Offers Structuring with AI",
-    subtitle: "NVIDIA Nemotron sintetizando ticket, produto e copy",
+    title: "Engenharia de Oferta",
+    subtitle: "Inteligência Artificial desenhando o produto",
     icon: Sparkles,
     logs: [
-      "Enviando dados do criador ao cluster OpenRouter Nemotron...",
-      "Calculando precificação ideal e limite de escassez...",
-      "Gerando hooks persuasivos e prova social estruturada...",
+      "Sintetizando proposta de valor irresistível...",
+      "Definindo precificação estratégica e escassez...",
+      "Criando ganchos persuasivos e estruturando oferta...",
     ],
   },
   {
     id: 3,
-    title: "PDF Blueprint Synthesis",
-    subtitle: "Compilando relatório estratégico executivo e roteiros",
+    title: "Plano de Execução",
+    subtitle: "Gerando relatório executivo de marketing",
     icon: FileText,
     logs: [
-      "Formatando layout executivo do Blueprint PDF...",
-      "Inserindo roteiro de Stories (aquecimento e fechamento)...",
-      "Gravando artefato no storage seguro da plataforma...",
+      "Compilando Dossiê exclusivo da campanha...",
+      "Estruturando cronograma estratégico de conteúdo...",
+      "Finalizando documentos de direcionamento...",
     ],
   },
   {
     id: 4,
-    title: "Finalizing",
-    subtitle: "Habilitando página de vendas e checkout PIX Asaas",
+    title: "Lançamento",
+    subtitle: "Preparando página de vendas e pagamentos",
     icon: CheckCheck,
     logs: [
-      "Configurando layout mobile-first no Drop Engine...",
-      "Sincronizando gateway Asaas para PIX transparente...",
-      "Drop pronto para publicação!",
+      "Construindo experiência otimizada de alta conversão...",
+      "Conectando sistema seguro de pagamentos...",
+      "Drop finalizado com sucesso!",
     ],
   },
 ];
@@ -181,7 +181,7 @@ function ProcessingContent() {
     >
       {/* Header */}
       <header
-        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between border-b"
+        className="w-full px-4 sm:px-8 md:px-12 py-5 flex items-center justify-between border-b"
         style={{ borderColor: "#0E0E0E30" }}
       >
         <span
@@ -191,7 +191,7 @@ function ProcessingContent() {
           Byte<span style={{ color: "#FF4D00" }}>Media</span>
         </span>
         <div
-          className="flex items-center gap-2 text-[10px] font-mono px-4 py-2 rounded-full border"
+          className="hidden xs:flex items-center gap-2 text-[10px] font-mono px-4 py-2 rounded-full border truncate"
           style={{ borderColor: "#0E0E0E30", color: "#777" }}
         >
           ID: {campaignId.slice(0, 8)}…
@@ -199,7 +199,7 @@ function ProcessingContent() {
       </header>
 
       {/* Main */}
-      <section className="flex-1 w-full max-w-2xl mx-auto px-6 sm:px-12 py-16 flex flex-col justify-center gap-10">
+      <section className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-8 md:px-12 py-12 sm:py-16 flex flex-col justify-center gap-10">
         {/* Headline */}
         <div className="space-y-3">
           <div
@@ -210,7 +210,7 @@ function ProcessingContent() {
             Processando
           </div>
           <h1
-            className="text-4xl sm:text-5xl font-extrabold leading-[1.05]"
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-[1.05]"
             style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
           >
             Sintetizando<br />seu{" "}
@@ -250,7 +250,7 @@ function ProcessingContent() {
             return (
               <div
                 key={step.id}
-                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300"
+                className="flex items-center gap-3 sm:gap-4 px-4 py-3.5 sm:px-5 sm:py-4 rounded-2xl transition-all duration-300"
                 style={
                   isActive
                     ? { backgroundColor: "#0E0E0E", color: "#fff" }
@@ -327,7 +327,7 @@ function ProcessingContent() {
 
       {/* Footer */}
       <footer
-        className="w-full px-6 sm:px-12 py-5 flex items-center justify-between text-xs border-t"
+        className="w-full px-4 sm:px-8 md:px-12 py-5 flex items-center justify-between text-xs border-t"
         style={{ backgroundColor: "#0E0E0E", borderColor: "#0E0E0E", fontFamily: "var(--font-dm)", color: "#555" }}
       >
         <span>ByteMedia · Plataforma B2B para Criadores</span>

@@ -10,6 +10,7 @@ export interface ThemeConfig {
 export interface CopyData {
   title: string;
   subtitle: string;
+  format?: string;
   hooks: string[];
   benefits: string[];
   social_proof_quotes?: Array<{
@@ -30,19 +31,17 @@ export interface CampaignSalesData {
   scarcity_limit?: number | null;
   expires_at?: string | null;
   created_at?: string;
+  paid_orders_count: number;
 }
+
 
 export interface CheckoutPayload {
   campaign_id: string;
-  buyer_name: string;
-  email: string;
-  cpf: string;
 }
 
 export interface CheckoutResponse {
   order_id: string;
-  pix_qr_code: string;
-  pix_copy_paste: string;
+  checkout_url: string;
 }
 
 export interface OrderStatusResponse {
@@ -129,23 +128,3 @@ export async function getOrderStatus(
   return response.json();
 }
 
-/**
- * Simulates webhook payment confirmation for dev/demo testing
- */
-export async function simulateOrderPayment(
-  orderId: string
-): Promise<{ status: string; message: string; order_id: string; order_status: string }> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/sales/order/${orderId}/simulate-pay`,
-    {
-      method: "POST",
-      headers: { Accept: "application/json" },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Falha ao simular confirmação de pagamento.");
-  }
-
-  return response.json();
-}

@@ -127,7 +127,7 @@ def generate_blueprint_pdf(
         elements = []
 
         # Document Header
-        elements.append(Paragraph("⚡ BYTEMEDIA • BLUEPRINT ESTRATÉGICO DE DROP", title_style))
+        elements.append(Paragraph("⚡ BYTEMEDIA • DOSSIÊ DE LANÇAMENTO", title_style))
         elements.append(Paragraph(f"Plano Executivo de Lançamento — Criador: <b>{handle}</b>", subtitle_style))
         elements.append(HRFlowable(width="100%", thickness=1.0, color=colors.HexColor(primary_color), spaceAfter=14))
 
@@ -206,7 +206,7 @@ def generate_blueprint_pdf(
         )
         elements.append(
             Paragraph(
-                f"ByteMedia MVP Drop Engine • Gerado automaticamente com IA Nemotron • ID: {campaign_id}",
+                f"ByteMedia Drop Engine • Gerado com IA Generativa • ID: {campaign_id}",
                 footer_style,
             )
         )

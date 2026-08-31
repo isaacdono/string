@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  Check,
 } from "lucide-react";
 import { createCampaign } from "@/lib/api";
 import Navbar from "@/components/Navbar";
@@ -107,7 +108,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero */}
-      <section id="home" className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-12 py-16 sm:py-24 flex flex-col justify-center gap-16">
+      <section id="home" className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-12 py-10 sm:py-16 md:py-24 flex flex-col justify-center gap-16">
         {/* Eyebrow */}
         <div className="flex items-start gap-6">
           <div
@@ -118,16 +119,16 @@ export default function HomePage() {
             className="text-sm uppercase font-semibold tracking-[0.18em]"
             style={{ fontFamily: "var(--font-dm)", color: "#FF4D00" }}
           >
-            IA Generativa · PIX Automático · Blueprint em PDF
+            IA Generativa · PIX Automático · Dossiê de Lançamento
           </p>
         </div>
 
         {/* Headline + Form side by side on desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-16 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-start">
           {/* Left: Headline */}
           <div className="space-y-6">
             <h1
-              className="text-5xl sm:text-6xl leading-[1.0] font-extrabold"
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl leading-[1.0] font-extrabold"
               style={{ fontFamily: "var(--font-syne)", color: "#0E0E0E" }}
             >
               Monetize<br />
@@ -145,25 +146,25 @@ export default function HomePage() {
               className="text-base leading-relaxed max-w-sm"
               style={{ fontFamily: "var(--font-dm)", color: "#555550" }}
             >
-              Digite seu perfil e sua ideia. A IA analisa, cria o copy, gera o checkout PIX e manda o Blueprint pra você em menos de 2 minutos.
+              Digite seu perfil e sua ideia. A IA analisa, cria o copy, gera o checkout PIX e manda o Dossiê pra você em menos de 2 minutos.
             </p>
 
-            {/* Value props — horizontal, sem cards */}
-            <div className="pt-4 flex flex-col gap-3">
+            {/* Value props */}
+            <div className="pt-2 flex flex-col gap-2.5">
               {[
-                ["Sem login, sem burocracia", "—"],
-                ["Checkout PIX em segundos", "—"],
-                ["Blueprint PDF pronto pra usar", "—"],
-              ].map(([label, dash], i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span
-                    className="text-base font-bold"
-                    style={{ color: "#FF4D00", fontFamily: "var(--font-syne)" }}
+                "Sem login, sem burocracia",
+                "Checkout PIX integrado",
+                "Dossiê de Lançamento incluso",
+              ].map((label, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <div
+                    className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: "#FF4D0015", color: "#FF4D00" }}
                   >
-                    {dash}
-                  </span>
+                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  </div>
                   <span
-                    className="text-sm"
+                    className="text-sm font-medium"
                     style={{ fontFamily: "var(--font-dm)", color: "#444" }}
                   >
                     {label}
@@ -175,7 +176,7 @@ export default function HomePage() {
 
           {/* Right: Form card */}
           <div
-            className="rounded-3xl p-8 space-y-6 border"
+            className="rounded-3xl p-5 sm:p-8 space-y-6 border"
             style={{
               backgroundColor: "#0E0E0E",
               borderColor: "#0E0E0E",
@@ -344,7 +345,7 @@ export default function HomePage() {
 
       {/* Bottom strip — preto com acento laranja */}
       <footer
-        className="w-full px-6 sm:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t"
+        className="w-full px-4 sm:px-8 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t"
         style={{
           backgroundColor: "#0E0E0E",
           borderColor: "#0E0E0E",
