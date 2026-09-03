@@ -1,0 +1,19 @@
+# Environment & secrets (Do NOT commit)
+.env
+*.env
+hermes.env
+
+# Dependencies & Build
+node_modules/
+dist/
+build/
+*.log
+
+# Docker & local data
+.hermes/
+data/
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/

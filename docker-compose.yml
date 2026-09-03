@@ -1,0 +1,26 @@
+services:
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes
+    restart: unless-stopped
+    command: gateway run
+    environment:
+      - API_SERVER_ENABLED=true
+      - API_SERVER_KEY=${API_SERVER_KEY:-}
+      - HERMES_DASHBOARD=false
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    ports:
+      - "8642:8642"
+    volumes:
+      - ~/.hermes:/opt/data
+
+  setup:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes-setup
+    stdin_open: true
+    tty: true
+    command: setup
+    volumes:
+      - ~/.hermes:/opt/data
+    profiles:
+      - tools
